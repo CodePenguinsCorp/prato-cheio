@@ -99,4 +99,7 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 - **Riscos e limitações:**
 
 ## Uso de IA
-A IA foi utilizada apenas para consulta, esclarecimento de conceitos, compreensão das orientações da atividade e revisão da clareza, coerência e formatação do documento. As sugestões recebidas foram analisadas criticamente pelo grupo antes de serem aplicadas.
+A IA foi usada para gerar histórias candidatas; o grupo revisou tudo antes de aproveitar.
+- `#2`: gerou "Como usuário, quero cadastrar uma doação". Mudamos para `doador de alimentos` e incluímos tipo, quantidade e validade, porque "usuário" não é stakeholder e faltava rastreabilidade mínima. Regra inventada: endereço obrigatório; decide Marta com a vigilância sanitária.
+- `#6`: gerou retirada com foto e geolocalização. Reduzimos para registro manual, porque essa prova tornava a fatia grande demais para celular e conexão instável. Regra inventada: retirada só vale com geolocalização; decide Marta com as ONGs.
+- `#8`: gerou reoferta automática da doação e aviso para todas as ONGs. Mantivemos só o aviso de impedimento, porque essa política não aparece no caso. Regra inventada: a doação volta sozinha para a fila; decide Marta.
