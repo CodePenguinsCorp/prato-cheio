@@ -53,6 +53,7 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 ## Histórias de usuário
 | # | História (Como… quero… para…) | INVEST: o que falha | Ação corretiva |
 |---|---|---|---|
+| ★ | Como ONG ou cozinha comunitária, quero ver uma doação publicada e aceitá-la para reservar a retirada antes que o alimento se perca. | A candidata inicial misturava achar, aceitar e registrar retirada, então falhava em `S` e `E`. | Cortamos a fatia para publicar -> listar -> aceitar -> sair da lista; retirada, métricas e exceções ficaram fora da história zero. |
 | 1 | Como doador de alimentos, quero publicar uma doação com tipo, quantidade e validade para colocar o excedente em circulação sem depender de mensagens dispersas. | A primeira redação falhava em `V`: o "para" repetia "publicar a doação". | Reescrevemos o benefício em termos de impacto no caso: reduzir atrito operacional e tempo até a ONG enxergar a oferta. |
 | 2 | Como vigilância sanitária, quero que o cadastro recuse doações sem tipo, quantidade e validade para manter a rastreabilidade mínima do alimento no piloto. | A candidata falhava em `I`: tratava conformidade completa como requisito desta iteração. | Limitamos a regra ao mínimo já citado no caso e nos testes; endereço, lote e comprovantes viraram risco a validar depois. |
 | 3 | Como ONG ou cozinha comunitária, quero listar as doações disponíveis para decidir cedo o que consigo retirar e preparar. | A candidata falhava em `N`: incluía filtro, mapa e ordenação por distância sem evidência no caso. | Mantivemos só a listagem simples das disponíveis, suficiente para demonstrar a descoberta da oferta no celular. |
@@ -60,6 +61,27 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 | 5 | Como ONG ou cozinha comunitária, quero registrar que a retirada foi concluída para encerrar a doação com rastreabilidade mínima. | A candidata falhava em `E`: assumia foto, assinatura e geolocalização. | Fatiamos para um registro manual simples de retirada; evidências mais fortes ficam para quando soubermos o custo no piloto. |
 | 6 | Como Marta, quero ver o tempo entre publicação e retirada das doações concluídas para testar se o gargalo principal está mesmo na coleta. | A candidata falhava em `S` e `V`: queria um dashboard de impacto amplo demais. | Reduzimos a fatia para uma única métrica do caso, tempo entre oferta e retirada, que já permite medir a hipótese central. |
 | 7 | Como ONG ou cozinha comunitária, quero sinalizar que não consegui retirar uma doação aceita dentro do prazo para disparar uma decisão operacional antes que o alimento se perca. | A candidata falhava em `N`: a regra de reofertar automaticamente a doação não existe no caso. | Mantivemos apenas o aviso de impedimento; a decisão sobre reabrir, descartar ou redirecionar ficou com a Marta. |
+
+
+**História zero (★)**
+
+**Por que ela:** porque a regra de negócio central do caso é tirar a doação da comunicação dispersa e colocá-la num fluxo rastreável em que uma ONG vê a oferta, a aceita e, a partir daí, ela deixa de estar disponível para outra organização.
+
+**O que ficou FORA da fatia**
+- Cadastro e autenticação de doadores, ONGs e voluntários.
+- Endereço detalhado, roteirização e repasse para entregadores.
+- Confirmação física da retirada com foto, assinatura ou geolocalização.
+- Notificações em tempo real e integração com WhatsApp ou SMS.
+- Cálculo de refeições, dashboard de impacto e relatórios.
+- Priorização entre bairros, desempate entre ONGs e reoferta automática.
+
+**Por quê**
+- Cadastro e autenticação: risco de consumir a iteração em controle de acesso antes de medir se a reserva simples já reduz o tempo entre oferta e coleta.
+- Endereço, roteirização e entregadores: risco de depender de dados estruturados e de uso na rua, em celular e conexão instável, sem sabermos ainda se o piloto precisa disso para provar o núcleo.
+- Confirmação física da retirada: medição; não é necessária para testar a primeira hipótese, porque a atividade desta iteração precisa só provar publicação -> descoberta -> aceite.
+- Notificações e integrações: risco de custo e complexidade incompatíveis com o orçamento próximo de zero citado no caso.
+- Impacto e relatórios: medição; antes de calcular refeições, precisamos medir se a doação sai da comunicação dispersa e entra em um fluxo confiável.
+- Priorização e reoferta: risco de inventar política operacional que pertence à Marta e pode mudar no piloto de um bairro.
 
 ## Critérios de aceite
 **História X** — Dado … Quando … Então …
