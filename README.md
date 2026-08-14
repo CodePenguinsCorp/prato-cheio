@@ -91,17 +91,8 @@ Falta (Trabalho 1 — walking skeleton): implementar `src/doacoes.js` (regras) e
 Os critérios de aceite estão em `tests/doacoes.test.js` como `it.todo`: troque cada um
 por um teste de verdade conforme implementa.
 
-## Conflitos de prioridade
-| Campo | Conteúdo |
-|---|---|
-| Fala 1 | "Eu quero cadastrar uma doação em poucos segundos, sem preencher um formulário grande." (doador) |
-| Fala 2 | "Eu preciso de rastreabilidade mínima para saber o que foi doado e se isso pode circular com segurança." (vigilância sanitária) |
-| Eixo do trade-off | Quantidade de campos obrigatórios no cadastro da doação. |
-| O que cada lado perde | Se o formulário crescer, o doador perde rapidez e pode desistir de publicar; se o formulário encolher demais, a vigilância perde rastreabilidade e aumenta o risco sanitário. |
-| Critério que decide | Na iteração 1, só são obrigatórios tipo, quantidade e validade; observações, foto e detalhes adicionais ficam opcionais e não bloqueiam a publicação. |
-| Saída usada | decidir |
-| Data e medição até lá, se adiar | Não se aplica. |
-
-
 ## Uso de IA
-A IA foi utilizada apenas para consulta, esclarecimento de conceitos, compreensão das orientações da atividade e revisão da clareza, coerência e formatação do documento. As sugestões recebidas foram analisadas criticamente pelo grupo antes de serem aplicadas.
+
+A IA pode participar da produção, mas o grupo é responsável por verificar, testar,
+corrigir e **defender** o resultado. Registre em cada Pull Request o que foi gerado
+com IA e o que vocês alteraram.
