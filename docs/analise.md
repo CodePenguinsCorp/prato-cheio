@@ -51,8 +51,15 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 
 
 ## Histórias de usuário
-| # | História (Como… quero… para…) | INVEST: o que falha |
-|---|---|---|
+| # | História (Como… quero… para…) | INVEST: o que falha | Ação corretiva |
+|---|---|---|---|
+| 1 | Como doador de alimentos, quero publicar uma doação com tipo, quantidade e validade para colocar o excedente em circulação sem depender de mensagens dispersas. | A primeira redação falhava em `V`: o "para" repetia "publicar a doação". | Reescrevemos o benefício em termos de impacto no caso: reduzir atrito operacional e tempo até a ONG enxergar a oferta. |
+| 2 | Como vigilância sanitária, quero que o cadastro recuse doações sem tipo, quantidade e validade para manter a rastreabilidade mínima do alimento no piloto. | A candidata falhava em `I`: tratava conformidade completa como requisito desta iteração. | Limitamos a regra ao mínimo já citado no caso e nos testes; endereço, lote e comprovantes viraram risco a validar depois. |
+| 3 | Como ONG ou cozinha comunitária, quero listar as doações disponíveis para decidir cedo o que consigo retirar e preparar. | A candidata falhava em `N`: incluía filtro, mapa e ordenação por distância sem evidência no caso. | Mantivemos só a listagem simples das disponíveis, suficiente para demonstrar a descoberta da oferta no celular. |
+| 4 | Como Marta, quero que uma doação aceita saia da lista pública e não possa ser aceita de novo para evitar conflito operacional entre ONGs. | A candidata falhava em `S`: escondia duas regras correlatas sem ligar isso ao mesmo valor. | Unificamos as regras porque ambas protegem a mesma consequência observável: uma reserva válida por vez. |
+| 5 | Como ONG ou cozinha comunitária, quero registrar que a retirada foi concluída para encerrar a doação com rastreabilidade mínima. | A candidata falhava em `E`: assumia foto, assinatura e geolocalização. | Fatiamos para um registro manual simples de retirada; evidências mais fortes ficam para quando soubermos o custo no piloto. |
+| 6 | Como Marta, quero ver o tempo entre publicação e retirada das doações concluídas para testar se o gargalo principal está mesmo na coleta. | A candidata falhava em `S` e `V`: queria um dashboard de impacto amplo demais. | Reduzimos a fatia para uma única métrica do caso, tempo entre oferta e retirada, que já permite medir a hipótese central. |
+| 7 | Como ONG ou cozinha comunitária, quero sinalizar que não consegui retirar uma doação aceita dentro do prazo para disparar uma decisão operacional antes que o alimento se perca. | A candidata falhava em `N`: a regra de reofertar automaticamente a doação não existe no caso. | Mantivemos apenas o aviso de impedimento; a decisão sobre reabrir, descartar ou redirecionar ficou com a Marta. |
 
 ## Critérios de aceite
 **História X** — Dado … Quando … Então …
