@@ -62,6 +62,7 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 | 6 | Como Marta, quero ver o tempo entre publicação e retirada das doações concluídas para testar se o gargalo principal está mesmo na coleta. | A candidata falhava em `S` e `V`: queria um dashboard de impacto amplo demais. | Reduzimos a fatia para uma única métrica do caso, tempo entre oferta e retirada, que já permite medir a hipótese central. |
 | 7 | Como ONG ou cozinha comunitária, quero sinalizar que não consegui retirar uma doação aceita dentro do prazo para disparar uma decisão operacional antes que o alimento se perca. | A candidata falhava em `N`: a regra de reofertar automaticamente a doação não existe no caso. | Mantivemos apenas o aviso de impedimento; a decisão sobre reabrir, descartar ou redirecionar ficou com a Marta. |
 
+**A História Zero (★) é:** “Como ONG ou cozinha comunitária, quero ver uma doação publicada e aceitá-la para reservar a retirada antes que o alimento se perca.”
 
 **História zero (★)**
 
@@ -87,16 +88,26 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 **História X** — Dado … Quando … Então …
 
 ## Riscos
-| Risco | Probabilidade | Impacto | Mitigação |
-|---|---|---|---|
+**Escala utilizada:** probabilidade e impacto são classificados como **Baixo**, **Médio** ou **Alto**. A prioridade do risco resulta da combinação entre a chance de ocorrer e a gravidade de suas consequências para o piloto.
+
+| Risco | Probabilidade | Impacto | Mitigação | Responsável | Prazo |
+|---|---|---|---|---|---|
+| Doadores desistirem de publicar porque o cadastro é demorado ou difícil de usar pelo celular. | Média | Alto | Manter somente tipo, quantidade e validade como campos obrigatórios; testar o formulário com pelo menos três doadores e simplificar os pontos que causarem abandono. | Marta e equipe de produto | Antes do início do piloto. |
+| Uma doação ser aceita, mas não ser retirada antes da validade, impedindo que outra ONG a aproveite. | Alta | Alto | Definir uma janela de confirmação, enviar alerta à ONG responsável e encaminhar os casos sem retirada para decisão operacional da Marta. | Marta e ONG que aceitou a doação | Regra definida antes do piloto e revisão ao fim da segunda semana. |
 
 ## Hipótese e experimento
 
+- **Hipótese falsificável:** no piloto, ao substituir a comunicação dispersa pelo fluxo de publicação, aceite e registro de retirada, pelo menos **70% das doações publicadas serão retiradas antes da validade**.
+- **Medida:** percentual de doações publicadas com retirada registrada antes da data e hora de validade.
+- **Valor/data que invalida a hipótese:** a hipótese será invalidada se, ao fim da **segunda semana do piloto**, o percentual for inferior a **70%**.
+- **Forma de medição:** o sistema registrará data e hora da publicação, da validade e da retirada de cada doação. Ao fim do período, será calculado: `(doações retiradas antes da validade / total de doações publicadas) × 100`. Doações canceladas pelo doador serão registradas separadamente e excluídas do cálculo.
+
 ## Decisão de análise
-- **Problema:**
-- **Alternativas:**
-- **Decisão e justificativa:**
-- **Riscos e limitações:**
+- **Problema:** definir o escopo da primeira iteração de forma que seja possível testar rapidamente se um fluxo centralizado melhora o aproveitamento das doações, sem ultrapassar o orçamento próximo de zero nem criar regras operacionais ainda não validadas.
+- **Alternativa 1 — implementar o fluxo mínimo de publicação, listagem e aceite:** ganha rapidez de entrega, baixo custo e validação antecipada da proposta central; perde recursos de logística, confirmação da retirada e medição completa do impacto.
+- **Alternativa 2 — implementar desde o início o fluxo completo, com cadastro, mapa, notificações, entregadores, comprovação da retirada e dashboard:** ganha maior cobertura operacional e rastreabilidade; perde simplicidade, exige mais tempo e custo e aumenta o risco de desenvolver funcionalidades sem evidência de necessidade.
+- **Decisão e justificativa:** escolher a **Alternativa 1**, exigindo apenas tipo, quantidade e validade na publicação e garantindo que uma doação aceita deixe de aparecer como disponível. Essa opção entrega a menor fatia capaz de testar o valor principal do sistema e permite aprender com o piloto antes de investir em automações e integrações.
+- **Riscos e limitações:** o fluxo mínimo não garante que a retirada aconteça, depende de acompanhamento manual da Marta e não resolve roteirização, conexão instável ou comprovação física da entrega. Além disso, um piloto pequeno ou concentrado em um único bairro pode não representar o comportamento de outros doadores e ONGs.
 
 ## Uso de IA
 A IA foi usada para gerar histórias candidatas; o grupo revisou tudo antes de aproveitar.
