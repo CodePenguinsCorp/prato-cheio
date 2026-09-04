@@ -20,5 +20,6 @@ Distribuam 100 pontos entre os integrantes conforme a contribuição desta itera
 |  |  |  |
 |  |  |  |
 |  |  |  |
+|  |  |  |
 
 **Total: 100**
