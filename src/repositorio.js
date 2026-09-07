@@ -1,5 +1,4 @@
 // Camada de dados do Prato Cheio — acesso ao banco.
-// TODO (grupo): implementar as quatro funções abaixo usando query().
 // A conexão e o schema já estão prontos em src/db.js.
 //
 // Marcador de parâmetro é `?` (SQL parametrizado evita injeção):
