@@ -3,75 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f5c45">
+  <meta name="description" content="Prato Cheio conecta doadores de alimentos a ONGs e cozinhas comunitárias.">
   <title>Prato Cheio</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; max-width: 40rem; }
-    h1 { font-size: 1.3rem; }
-    fieldset { border: 1px solid #ccc; border-radius: .5rem; margin-bottom: 1rem; }
-    label { display: block; margin: .5rem 0 .2rem; font-size: .9rem; }
-    input, button { font-size: 1rem; padding: .6rem; width: 100%; box-sizing: border-box; }
-    button { margin-top: .8rem; cursor: pointer; }
-    li { border: 1px solid #ddd; border-radius: .5rem; padding: .6rem; margin-bottom: .5rem; list-style: none; }
-    ul { padding: 0; }
-  </style>
+  <link rel="stylesheet" href="/custom.css">
 </head>
 <body>
-  <h1>Prato Cheio</h1>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#inicio" aria-label="Prato Cheio - início">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+            <path d="M4 11a8 8 0 0 0 16 0H4Z"/>
+            <path d="M7 15h10M12 7V3M8.5 8.5 6 6M15.5 8.5 18 6"/>
+          </svg>
+        </span>
+        Prato Cheio
+      </a>
+    </div>
+  </header>
 
-  <fieldset>
-    <legend>Publicar doação</legend>
-    <label for="tipo">Tipo de alimento</label>
-    <input id="tipo" placeholder="Ex.: sopa, pão, frutas">
-    <label for="quantidade">Quantidade</label>
-    <input id="quantidade" placeholder="Ex.: 10 porções">
-    <label for="validade">Validade / retirar até</label>
-    <input id="validade" type="date">
-    <button id="publicar">Publicar</button>
-  </fieldset>
+  <main id="inicio">
+    <section class="hero" aria-labelledby="titulo-principal">
+      <div>
+        <p class="eyebrow">Menos desperdício, mais impacto</p>
+        <h1 id="titulo-principal">Alimento bom merece um <span>novo destino.</span></h1>
+        <p class="hero-copy">
+          Conectamos quem tem alimentos disponíveis a quem transforma cada doação
+          em cuidado para a comunidade.
+        </p>
+      </div>
+      <aside class="impact-card" aria-label="Resumo das doações disponíveis">
+        <span class="impact-label">Disponíveis agora</span>
+        <strong class="impact-number" id="total-disponiveis">-</strong>
+        <p class="impact-text" id="impacto-texto">Buscando oportunidades de ajudar...</p>
+      </aside>
+    </section>
 
-  <h2>Doações disponíveis</h2>
-  <ul id="lista"></ul>
+    <section class="workspace" aria-label="Publicação e aceite de doações">
+      <article class="panel donor-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">Para doadores</p>
+            <h2>Publique uma doação</h2>
+            <p>Informe o essencial para que uma organização possa encontrá-la.</p>
+          </div>
+        </div>
 
-  <script>
-    async function carregar() {
-      const res = await fetch('/api/doacoes');
-      const doacoes = await res.json();
-      const lista = document.getElementById('lista');
-      lista.innerHTML = doacoes.length
-        ? ''
-        : '<li>Nenhuma doação disponível.</li>';
-      for (const d of doacoes) {
-        const li = document.createElement('li');
-        li.textContent = `${d.tipo} — ${d.quantidade} (até ${d.validade}) `;
-        const botao = document.createElement('button');
-        botao.textContent = 'Aceitar';
-        botao.onclick = async () => {
-          await fetch(`/api/doacoes/${d.id}/aceitar`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ong: 'Minha ONG' })
-          });
-          carregar();
-        };
-        li.appendChild(botao);
-        lista.appendChild(li);
-      }
-    }
+        <form id="form-doacao" novalidate>
+          <div class="field" id="campo-tipo">
+            <label for="tipo">Tipo de alimento</label>
+            <input id="tipo" name="tipo" type="text" placeholder="Ex.: frutas, pães ou marmitas" autocomplete="off" aria-describedby="erro-tipo" required>
+            <p class="field-error" id="erro-tipo">Informe o tipo de alimento.</p>
+          </div>
+          <div class="field" id="campo-quantidade">
+            <label for="quantidade">Quantidade disponível</label>
+            <input id="quantidade" name="quantidade" type="text" placeholder="Ex.: 20 unidades ou 10 porções" autocomplete="off" aria-describedby="erro-quantidade" required>
+            <p class="field-error" id="erro-quantidade">Informe a quantidade disponível.</p>
+          </div>
+          <div class="field" id="campo-validade">
+            <label for="validade">Retirar até</label>
+            <input id="validade" name="validade" type="date" aria-describedby="erro-validade" required>
+            <p class="field-error" id="erro-validade">Informe a data limite para retirada.</p>
+          </div>
+          <button class="button button-primary" id="publicar" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Publicar doação</span>
+          </button>
+          <p class="form-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+            Após a publicação, a doação fica visível para as organizações nesta página.
+          </p>
+        </form>
+      </article>
 
-    document.getElementById('publicar').onclick = async () => {
-      await fetch('/api/doacoes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipo: document.getElementById('tipo').value,
-          quantidade: document.getElementById('quantidade').value,
-          validade: document.getElementById('validade').value
-        })
-      });
-      carregar();
-    };
+      <article class="panel list-panel">
+        <div class="list-header">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Para ONGs e cozinhas</p>
+              <h2>Doações disponíveis</h2>
+              <p>Escolha uma oportunidade e reserve a retirada para sua organização.</p>
+            </div>
+          </div>
+          <div class="ong-context">
+            <div class="field" id="campo-ong">
+              <label for="nome-ong">Nome da sua organização</label>
+              <input id="nome-ong" type="text" placeholder="Ex.: Cozinha Solidária" autocomplete="organization" aria-describedby="erro-ong">
+              <p class="field-error" id="erro-ong">Comece o nome com uma letra ou número.</p>
+            </div>
+          </div>
+        </div>
+        <ul class="donation-list" id="lista" aria-live="polite" aria-busy="true">
+          <li class="loading-state"><span class="spinner" aria-hidden="true"></span>Carregando doações...</li>
+        </ul>
+      </article>
+    </section>
+  </main>
 
-    carregar();
-  </script>
+  <div class="toast-region" id="toast-region" aria-live="assertive"></div>
+
+  <script src="/app.js" defer></script>
 </body>
 </html>

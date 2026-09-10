@@ -22,10 +22,30 @@ describe('a aplicação sobe', () => {
     expect(res.status).toBe(200);
     expect(res.body.ok).toBe(true);
   });
+
+  it('EX-05: serve a interface com CSS e JavaScript externos', async () => {
+    const [pagina, estilos, scripts] = await Promise.all([
+      request(app).get('/'),
+      request(app).get('/custom.css'),
+      request(app).get('/app.js')
+    ]);
+
+    expect(pagina.status).toBe(200);
+    expect(pagina.text).toContain('href="/custom.css"');
+    expect(pagina.text).toContain('src="/app.js" defer');
+    expect(pagina.text).not.toContain('<style>');
+    expect(pagina.text).not.toContain('<script>');
+    expect(estilos.status).toBe(200);
+    expect(estilos.headers['content-type']).toContain('text/css');
+    expect(estilos.text).toContain(':root');
+    expect(scripts.status).toBe(200);
+    expect(scripts.headers['content-type']).toContain('javascript');
+    expect(scripts.text).toContain("const form = document.getElementById('form-doacao')");
+  });
 });
 
 describe('publicar e listar doações', () => {
-  it('mostra a doação publicada na lista de disponíveis', async () => {
+  it('CA-01: mostra a doação publicada na lista de disponíveis', async () => {
     const publicada = await request(app)
       .post('/api/doacoes')
       .send({ tipo: 'Sopa', quantidade: '10 porções', validade: '2026-09-08' });
@@ -48,7 +68,7 @@ describe('publicar e listar doações', () => {
     ['tipo', { quantidade: '10 porções', validade: '2026-09-08' }],
     ['quantidade', { tipo: 'Sopa', validade: '2026-09-08' }],
     ['validade', { tipo: 'Sopa', quantidade: '10 porções' }]
-  ])('recusa doação sem o campo obrigatório %s', async (campo, doacao) => {
+  ])('CA-02: recusa doação sem o campo obrigatório %s', async (campo, doacao) => {
     const resposta = await request(app).post('/api/doacoes').send(doacao);
 
     expect(resposta.status).toBe(400);
@@ -56,6 +76,18 @@ describe('publicar e listar doações', () => {
 
     const disponiveis = await request(app).get('/api/doacoes');
     expect(disponiveis.body).toEqual([]);
+  });
+
+  it.each([
+    ['amanhã', 'validade deve estar no formato AAAA-MM-DD'],
+    ['2026-02-30', 'validade deve ser uma data válida']
+  ])('EX-01: recusa validade inválida %s', async (validade, mensagem) => {
+    const resposta = await request(app)
+      .post('/api/doacoes')
+      .send({ tipo: 'Frutas', quantidade: '6 caixas', validade });
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.erro).toBe(mensagem);
   });
 });
 
@@ -69,7 +101,7 @@ describe('aceitar uma doação', () => {
     return resposta.body;
   }
 
-  it('marca a doação como aceita pela ONG', async () => {
+  it('CA-03: marca a doação como aceita pela ONG', async () => {
     const doacao = await publicar();
 
     const resposta = await request(app)
@@ -84,7 +116,7 @@ describe('aceitar uma doação', () => {
     });
   });
 
-  it('remove a doação da lista de disponíveis depois de aceita', async () => {
+  it('CA-04: remove a doação da lista de disponíveis depois de aceita', async () => {
     const doacao = await publicar();
     await request(app)
       .post(`/api/doacoes/${doacao.id}/aceitar`)
@@ -96,7 +128,7 @@ describe('aceitar uma doação', () => {
     expect(disponiveis.body).toEqual([]);
   });
 
-  it('recusa aceitar uma doação que já foi aceita por outra ONG', async () => {
+  it('CA-05: recusa aceitar uma doação que já foi aceita por outra ONG', async () => {
     const doacao = await publicar();
     await request(app)
       .post(`/api/doacoes/${doacao.id}/aceitar`)
@@ -110,7 +142,7 @@ describe('aceitar uma doação', () => {
     expect(segundaTentativa.body.erro).toBe('doação já foi aceita');
   });
 
-  it('permite somente um aceite quando duas ONGs tentam ao mesmo tempo', async () => {
+  it('EX-02: permite somente um aceite quando duas ONGs tentam ao mesmo tempo', async () => {
     const doacao = await publicar();
 
     const respostas = await Promise.all([
@@ -119,5 +151,27 @@ describe('aceitar uma doação', () => {
     ]);
 
     expect(respostas.map(({ status }) => status).sort()).toEqual([200, 400]);
+  });
+
+  it('EX-03: recusa organização cujo nome começa com pontuação', async () => {
+    const doacao = await publicar();
+
+    const resposta = await request(app)
+      .post(`/api/doacoes/${doacao.id}/aceitar`)
+      .send({ ong: '.Cozinha Solidária' });
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.erro).toBe('ong deve começar com uma letra ou número');
+  });
+
+  it('EX-04: recusa o aceite sem identificar a organização', async () => {
+    const doacao = await publicar();
+
+    const resposta = await request(app)
+      .post(`/api/doacoes/${doacao.id}/aceitar`)
+      .send({});
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.erro).toBe('ong é obrigatório');
   });
 });

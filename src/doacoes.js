@@ -8,13 +8,42 @@ function exigirTexto(valor, campo) {
   return valor.trim();
 }
 
+function exigirInicio(valor, campo, padrao, descricao) {
+  const texto = exigirTexto(valor, campo);
+  if (!padrao.test(texto)) {
+    throw new Error(`${campo} deve começar com ${descricao}`);
+  }
+  return texto;
+}
+
+function exigirDataIso(valor, campo) {
+  const texto = exigirTexto(valor, campo);
+  const correspondencia = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto);
+
+  if (!correspondencia) {
+    throw new Error(`${campo} deve estar no formato AAAA-MM-DD`);
+  }
+
+  const [, ano, mes, dia] = correspondencia.map(Number);
+  const data = new Date(Date.UTC(ano, mes - 1, dia));
+  const ehDataReal = data.getUTCFullYear() === ano
+    && data.getUTCMonth() === mes - 1
+    && data.getUTCDate() === dia;
+
+  if (!ehDataReal) {
+    throw new Error(`${campo} deve ser uma data válida`);
+  }
+
+  return texto;
+}
+
 // História zero — "um doador publica uma doação".
 // Critério: tipo, quantidade e validade são obrigatórios.
 export async function criarDoacao({ tipo, quantidade, validade } = {}) {
   return repo.inserir({
     tipo: exigirTexto(tipo, 'tipo'),
     quantidade: exigirTexto(quantidade, 'quantidade'),
-    validade: exigirTexto(validade, 'validade')
+    validade: exigirDataIso(validade, 'validade')
   });
 }
 
@@ -31,7 +60,7 @@ export async function aceitar(id, ong) {
     throw new Error('id da doação é inválido');
   }
 
-  const nomeOng = exigirTexto(ong, 'ong');
+  const nomeOng = exigirInicio(ong, 'ong', /^[\p{L}\p{N}]/u, 'uma letra ou número');
   const doacao = await repo.buscarPorId(idNumerico);
 
   if (!doacao) throw new Error('doação não encontrada');
