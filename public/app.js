@@ -181,7 +181,7 @@ async function carregar() {
     atualizarResumo(doacoes.length);
     renderizarDoacoes();
   } catch (erro) {
-    totalDisponiveis.textContent = '—';
+    totalDisponiveis.textContent = '-';
     impactoTexto.textContent = 'Não foi possível consultar as doações.';
     renderizarErro();
     mostrarToast(erro.message, 'error');

@@ -1,4 +1,4 @@
-# Prato Cheio — CodePenguins
+# Prato Cheio - CodePenguins
 
 Projeto da disciplina **Análise, Projeto e Desenvolvimento Ágil**.
 Conecta doadores de alimentos excedentes a ONGs, antes que a comida se perca.
@@ -7,10 +7,11 @@ Conecta doadores de alimentos excedentes a ONGs, antes que a comida se perca.
 > walking skeleton (U1) → incremento guiado pelo projeto (U2) → produto refatorado (U3).
 
 ## Integrantes
-- André Schultz — @andreschultzz
-- José Henrique Brühmüller — @JHBruhmuller
-- Matheus Büsemayer — @pixelbananas
-- Lucas Mönich Nunes - @luhrt
+
+- André Schultz - @andreschultzz
+- José Henrique Brühmüller - @JHBruhmuller
+- Matheus Büsemayer - @pixelbananas
+- Lucas Monich Nunes - @luhrt
 
 ## Como rodar
 
@@ -35,11 +36,11 @@ Os testes usam SQLite **em memória**, então não sujam o banco de desenvolvime
 
 ## O banco: SQLite agora, PostgreSQL depois
 
-| Unidade | Banco | O que precisa instalar |
-|---|---|---|
-| 1 — Análise | **SQLite** (`node:sqlite`, embutido) | nada além do Node |
-| 2 — Projeto | SQLite | nada |
-| 3 — Construção | **PostgreSQL** (após refatorar) | um PostgreSQL acessível — o caminho é escolha do grupo |
+| Unidade        | Banco                                | O que precisa instalar                                 |
+| -------------- | ------------------------------------ | ------------------------------------------------------ |
+| 1 — Análise    | **SQLite** (`node:sqlite`, embutido) | nada além do Node                                      |
+| 2 — Projeto    | SQLite                               | nada                                                   |
+| 3 — Construção | **PostgreSQL** (após refatorar)      | um PostgreSQL acessível — o caminho é escolha do grupo |
 
 A troca não é acidente de percurso: na Unidade 2 vocês registram a decisão em um **ADR** (alternativas, consequências, riscos) e na Unidade 3 executam a **refatoração** — com os testes existentes provando que o comportamento se manteve.
 
