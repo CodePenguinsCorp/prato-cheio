@@ -4,7 +4,7 @@
 
 ## Problema central
 
-Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem coordenar a oferta e a retirada das doações com rapidez e previsibilidade suficientes. Hoje, a coleta depende de comunicação operacional dispersa, pouca rastreabilidade e decisões demoradas, o que aumenta o tempo entre a oferta e a retirada, faz doações se perderem antes do aproveitamento e reduz o número de refeições que poderiam chegar às famílias.
+Doadores, ONGs e cozinhas comunitárias não coordenam oferta e retirada com rapidez e previsibilidade. A comunicação dispersa, a baixa rastreabilidade e as decisões demoradas aumentam o tempo de coleta e o descarte de alimentos próprios para consumo.
 
 ## Incertezas
 
@@ -17,26 +17,29 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 ## Stakeholders
 | Stakeholder | Interesse | Influência | Evidência no caso | Consequência para a iteração 1 |
 |---|---|---|---|---|
-| Doadores (restaurantes, padarias e mercados) | Escoar excedente com pouco atrito e sem perder tempo no cadastro. | Alta | O caso lista os doadores como origem das ofertas; sem eles não existe doação para circular. | Entrevistar na primeira rodada e aceitar agora requisitos do cadastro e da publicação da doação. |
-| ONGs e cozinhas comunitárias | Saber o que está disponível cedo o bastante para organizar retirada e preparo. | Alta | O caso as coloca como destino da doação e o fluxo base do produto depende de elas verem e aceitarem a oferta. | Entrevistar na primeira rodada e aceitar agora requisitos de listagem, visualização e aceite. |
-| Marta | Fazer o piloto funcionar e reduzir o gargalo no tempo de coleta. | Alta | O material a identifica como patrocinadora e operação, além de atribuir a ela a hipótese de que o tempo de coleta é o gargalo. | Validar com ela o recorte da iteração 1 e aceitar agora regras operacionais e prioridades do piloto. |
-| Vigilância sanitária | Garantir rastreabilidade mínima e conformidade para a circulação do alimento. | Alta | O caso diz que ela não usa o sistema, mas decide, e que exige registrar tipo, quantidade e validade. | Consultar antes de fechar o formulário e aceitar agora apenas requisitos obrigatórios de conformidade. |
-| Voluntários entregadores | Conseguir usar o fluxo em celular, na rua e com conexão instável. | Baixa | O caso explicita o contexto de uso em mobilidade e conexão instável. | Ouvir cedo para restrições de uso, mas deixar requisitos mais avançados de entrega para depois do fluxo doador -> ONG. |
-| Famílias que recebem a refeição | Receber alimento em tempo útil e em condições seguras. | Baixa | Elas não aparecem na lista-base da aula, mas sofrem diretamente a consequência final quando a doação atrasa, se perde ou chega inadequada. | Representar por meio das ONGs na iteração 1; não entrevistar antes de validar o piloto básico. |
+| Doadores | Publicar excedentes com pouco atrito. | Alta | Originam as ofertas. | Priorizar cadastro com três campos. |
+| ONGs e cozinhas | Encontrar e reservar alimentos em tempo útil. | Alta | Recebem as doações. | Priorizar listagem e aceite. |
+| Marta | Fazer o piloto funcionar e reduzir perdas. | Alta | Patrocinadora e operação. | Validar escopo e regras operacionais. |
+| Vigilância sanitária | Garantir rastreabilidade mínima. | Alta | Pode impedir a circulação. | Exigir tipo, quantidade e validade. |
+| Voluntários | Usar o fluxo no celular e com conexão instável. | Baixa | Atuam na rua. | Considerar uso móvel; logística fica fora. |
+| Famílias atendidas | Receber alimento seguro em tempo útil. | Baixa | Sofrem o impacto final. | Representação inicial pelas ONGs. |
 
 ## Objetivos de impacto
 | Objetivo | Métrica | Linha de base | Direção | Como obter a linha de base |
 |---|---|---|---|---|
-| Reduzir o tempo entre a publicação da doação e a retirada registrada. | Tempo mediano, em minutos, entre publicar e registrar retirada. | Hoje desconhecida. | Diminuir. | Medir desde o primeiro dia do piloto, registrando horário de publicação e horário de retirada em cada doação. |
-| Aumentar a proporção de doações publicadas que são efetivamente retiradas antes da validade. | Percentual de doações publicadas com retirada confirmada antes da validade. | Hoje desconhecida. | Aumentar. | Levantar nas duas primeiras semanas do piloto, comparando total publicado com total retirado dentro do prazo. |
-| Aumentar o número estimado de refeições viabilizadas por semana pelas doações coletadas. | Refeições estimadas por semana, calculadas pelas ONGs a partir de tipo e quantidade recebidos. | Hoje desconhecida. | Aumentar. | Pedir que cada ONG piloto registre a estimativa de aproveitamento ao confirmar cada retirada nas primeiras semanas. |
+| Reduzir tempo até a retirada. | Mediana de minutos entre publicação e retirada. | Desconhecida. | Diminuir | Registrar horários no piloto. |
+| Aumentar retiradas antes da validade. | Percentual das publicações. | Desconhecida. | Aumentar | Comparar publicadas e retiradas em duas semanas. |
+| Aumentar refeições viabilizadas. | Estimativa semanal das ONGs. | Desconhecida. | Aumentar | Registrar após cada retirada. |
 
 ## Regras de negócio
--Falta um dono claro para a regra "Doação aceita sai da fila pública" — quem assume a decisão final e a responsabilidade por conflitos não está definido.
--A regra não menciona atomicidade/concorrência: aceitar simultâneo por duas ONGs precisa de mecanismo transacional (lock/compare-and-swap).
-"Publicação exige rastreabilidade mínima" omite formatos/valores válidos (unidades, tipo normalizado, validade em ISO), e validação server-side.
--Não há definição de exceções (ex.: doador cancela, doação parcialmente retirada, ou validade menor que janela de reserva).
--Regra de expiração em 2 horas não considera notificações, fuso horário, relógio do servidor nem extensão por aviso; precisa de owner operacional e métricas.
+
+| # | Origem | Regra ou ausência |
+|:---:|---|---|
+| RN-01 | Imposta | Uma doação só pode ser publicada com tipo, quantidade e validade. |
+| RN-02 | Dita | Ao ser aceita, a doação deixa de ficar disponível para outras ONGs. |
+| RN-03 | Derivada | Uma doação já aceita não pode receber um segundo aceite. |
+| RN-04 | Ausente | O caso não define o que ocorre quando a ONG aceita e não retira. |
+| RN-05 | Ausente | O caso não autoriza retorno automático à lista após um prazo. |
 
 ## Conflitos de prioridade
 | Campo | Conteúdo |
@@ -53,53 +56,59 @@ Doadores de alimentos excedentes, ONGs e cozinhas comunitárias não conseguem c
 ## Histórias de usuário
 | # | História (Como… quero… para…) | INVEST: o que falha | Ação corretiva |
 |---|---|---|---|
-| ★ | Como ONG ou cozinha comunitária, quero ver uma doação publicada e aceitá-la para reservar a retirada antes que o alimento se perca. | A candidata inicial misturava achar, aceitar e registrar retirada, então falhava em `S` e `E`. | Cortamos a fatia para publicar -> listar -> aceitar -> sair da lista; retirada, métricas e exceções ficaram fora da história zero. |
-| 1 | Como doador de alimentos, quero publicar uma doação com tipo, quantidade e validade para colocar o excedente em circulação sem depender de mensagens dispersas. | A primeira redação falhava em `V`: o "para" repetia "publicar a doação". | Reescrevemos o benefício em termos de impacto no caso: reduzir atrito operacional e tempo até a ONG enxergar a oferta. |
-| 2 | Como vigilância sanitária, quero que o cadastro recuse doações sem tipo, quantidade e validade para manter a rastreabilidade mínima do alimento no piloto. | A candidata falhava em `I`: tratava conformidade completa como requisito desta iteração. | Limitamos a regra ao mínimo já citado no caso e nos testes; endereço, lote e comprovantes viraram risco a validar depois. |
-| 3 | Como ONG ou cozinha comunitária, quero listar as doações disponíveis para decidir cedo o que consigo retirar e preparar. | A candidata falhava em `N`: incluía filtro, mapa e ordenação por distância sem evidência no caso. | Mantivemos só a listagem simples das disponíveis, suficiente para demonstrar a descoberta da oferta no celular. |
-| 4 | Como Marta, quero que uma doação aceita saia da lista pública e não possa ser aceita de novo para evitar conflito operacional entre ONGs. | A candidata falhava em `S`: escondia duas regras correlatas sem ligar isso ao mesmo valor. | Unificamos as regras porque ambas protegem a mesma consequência observável: uma reserva válida por vez. |
-| 5 | Como ONG ou cozinha comunitária, quero registrar que a retirada foi concluída para encerrar a doação com rastreabilidade mínima. | A candidata falhava em `E`: assumia foto, assinatura e geolocalização. | Fatiamos para um registro manual simples de retirada; evidências mais fortes ficam para quando soubermos o custo no piloto. |
-| 6 | Como Marta, quero ver o tempo entre publicação e retirada das doações concluídas para testar se o gargalo principal está mesmo na coleta. | A candidata falhava em `S` e `V`: queria um dashboard de impacto amplo demais. | Reduzimos a fatia para uma única métrica do caso, tempo entre oferta e retirada, que já permite medir a hipótese central. |
-| 7 | Como ONG ou cozinha comunitária, quero sinalizar que não consegui retirar uma doação aceita dentro do prazo para disparar uma decisão operacional antes que o alimento se perca. | A candidata falhava em `N`: a regra de reofertar automaticamente a doação não existe no caso. | Mantivemos apenas o aviso de impedimento; a decisão sobre reabrir, descartar ou redirecionar ficou com a Marta. |
+| ★ | Como ONG, quero ver e aceitar uma doação para reservá-la antes que se perca. | `S`, `E` | Cortar para publicar → listar → aceitar → sair da lista. |
+| 1 | Como doador, quero publicar tipo, quantidade e validade para colocar o excedente em circulação. | `V` | Expressar o benefício fora do sistema. |
+| 2 | Como vigilância, quero recusar publicação incompleta para manter rastreabilidade mínima. | `I` | Limitar aos três dados conhecidos. |
+| 3 | Como ONG, quero listar doações disponíveis para decidir o que consigo retirar. | `N` | Retirar filtros, mapa e proximidade. |
+| 4 | Como Marta, quero que a doação aceita saia da lista para evitar conflito entre ONGs. | `S` | Unir saída da lista e bloqueio do segundo aceite. |
+| 5 | Como ONG, quero registrar a retirada para encerrar a doação com rastreabilidade. | `E` | Adiar foto, geolocalização e assinatura. |
+| 6 | Como Marta, quero medir o tempo até a retirada para testar o gargalo da coleta. | `S`, `V` | Manter uma única métrica. |
+| 7 | Como ONG, quero informar que não retirei para permitir uma decisão operacional. | `N` | Remover a reoferta automática não autorizada. |
+
+As histórias 3, 4 e 5 são as três fatias demonstráveis da história gigante “encontrar, aceitar e retirar a doação certa”.
 
 
 **História zero (★)**
 
 **Por que ela:** porque a regra de negócio central do caso é tirar a doação da comunicação dispersa e colocá-la num fluxo rastreável em que uma ONG vê a oferta, a aceita e, a partir daí, ela deixa de estar disponível para outra organização.
 
-**O que ficou FORA da fatia**
-- Cadastro e autenticação de doadores, ONGs e voluntários.
-- Endereço detalhado, roteirização e repasse para entregadores.
-- Confirmação física da retirada com foto, assinatura ou geolocalização.
-- Notificações em tempo real e integração com WhatsApp ou SMS.
-- Cálculo de refeições, dashboard de impacto e relatórios.
-- Priorização entre bairros, desempate entre ONGs e reoferta automática.
-
-**Por quê**
-- Cadastro e autenticação: risco de consumir a iteração em controle de acesso antes de medir se a reserva simples já reduz o tempo entre oferta e coleta.
-- Endereço, roteirização e entregadores: risco de depender de dados estruturados e de uso na rua, em celular e conexão instável, sem sabermos ainda se o piloto precisa disso para provar o núcleo.
-- Confirmação física da retirada: medição; não é necessária para testar a primeira hipótese, porque a atividade desta iteração precisa só provar publicação -> descoberta -> aceite.
-- Notificações e integrações: risco de custo e complexidade incompatíveis com o orçamento próximo de zero citado no caso.
-- Impacto e relatórios: medição; antes de calcular refeições, precisamos medir se a doação sai da comunicação dispersa e entra em um fluxo confiável.
-- Priorização e reoferta: risco de inventar política operacional que pertence à Marta e pode mudar no piloto de um bairro.
+**O que ficou fora:** autenticação, logística, voluntários, confirmação física, notificações, relatórios, priorização e reoferta automática. Esses itens ampliam custo ou dependem de regras ainda não validadas sem serem necessários para provar publicação → descoberta → aceite.
 
 ## Critérios de aceite
-**História X** — Dado … Quando … Então …
+
+| # | História | Dado | Quando | Então |
+|:---:|:---:|---|---|---|
+| CA-01 | 1 e 3 | Uma doação completa | O doador publica | Ela aparece na lista de disponíveis. |
+| CA-02 | 2 | Falta tipo, quantidade ou validade | O doador tenta publicar | A publicação é recusada. |
+| CA-03 | ★ e 4 | Uma doação disponível | Uma ONG aceita | Ela fica aceita e associada à ONG. |
+| CA-04 | ★ e 4 | Uma doação aceita | A lista é consultada | Ela não aparece entre as disponíveis. |
+| CA-05 | ★ e 4 | Uma doação já aceita | Outra ONG tenta aceitar | O segundo aceite é recusado. |
+
+Os testes usam os mesmos identificadores em `tests/doacoes.test.js`.
 
 ## Riscos
-| Risco | Probabilidade | Impacto | Mitigação |
-|---|---|---|---|
+
+| Risco | Prob. | Impacto | Mitigação | Responsável |
+|---|:---:|:---:|---|---|
+| Doador abandonar um cadastro demorado. | Média | Alto | Manter três campos e testar com três doadores. | Marta e equipe |
+| Doação ser aceita e não retirada no prazo. | Alta | Alto | Acompanhar manualmente no piloto e definir com Marta a regra de tratamento. | Marta e ONG |
 
 ## Hipótese e experimento
 
+**Hipótese:** durante um piloto de duas semanas em um bairro, pelo menos 70% das doações publicadas serão aceitas antes da validade usando o fluxo centralizado.
+
+**Experimento:** operar com ao menos três doadores e duas ONGs, registrar publicação, aceite e validade em uma planilha e calcular `aceitas antes da validade / publicadas × 100`. Resultado inferior a 70% invalida a hipótese. O registro manual é uma limitação consciente da primeira iteração.
+
 ## Decisão de análise
-- **Problema:**
-- **Alternativas:**
-- **Decisão e justificativa:**
-- **Riscos e limitações:**
+
+- **Problema:** validar o fluxo principal com orçamento próximo de zero e sem inventar políticas operacionais.
+- **Alternativa 1:** publicar, listar e aceitar; entrega rápida, mas não cobre a retirada física.
+- **Alternativa 2:** incluir autenticação, mapas, notificações, entregadores e relatórios; cobre mais, mas aumenta custo e risco antes de haver evidência.
+- **Decisão:** adotar a Alternativa 1 por ser a menor fatia que testa o valor e a regra central.
+- **Limitações:** não confirma retirada, não resolve logística ou conexão instável e depende de acompanhamento manual no piloto.
 
 ## Uso de IA
 A IA foi usada para gerar histórias candidatas; o grupo revisou tudo antes de aproveitar.
-- `#2`: gerou "Como usuário, quero cadastrar uma doação". Mudamos para `doador de alimentos` e incluímos tipo, quantidade e validade, porque "usuário" não é stakeholder e faltava rastreabilidade mínima. Regra inventada: endereço obrigatório; decide Marta com a vigilância sanitária.
-- `#6`: gerou retirada com foto e geolocalização. Reduzimos para registro manual, porque essa prova tornava a fatia grande demais para celular e conexão instável. Regra inventada: retirada só vale com geolocalização; decide Marta com as ONGs.
-- `#8`: gerou reoferta automática da doação e aviso para todas as ONGs. Mantivemos só o aviso de impedimento, porque essa política não aparece no caso. Regra inventada: a doação volta sozinha para a fila; decide Marta.
+- `#1`: gerou "Como usuário, quero cadastrar uma doação". Mudamos para `doador de alimentos` e incluímos tipo, quantidade e validade, porque "usuário" não é stakeholder e faltava rastreabilidade mínima. Regra inventada: endereço obrigatório; decide Marta com a vigilância sanitária.
+- `#5`: gerou retirada com foto e geolocalização. Reduzimos para registro manual, porque essa prova tornava a fatia grande demais. Regra inventada: retirada só vale com geolocalização; decide Marta com as ONGs.
+- `#7`: gerou reoferta automática da doação e aviso para todas as ONGs. Mantivemos só o aviso de impedimento, porque essa política não aparece no caso. Regra inventada: a doação volta sozinha para a fila; decide Marta.
