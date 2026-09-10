@@ -12,8 +12,6 @@ npm start
 
 ## Roteiro (3 minutos)
 
-Referência de escopo: [RN01–RN11 e critérios da análise](analise.md). A demonstração atual cobre publicação, listagem e aceite; não comprova retirada nem impacto (RN11). Validação de quantidade e validade, identificação real da ONG e exibição do erro de aceite na interface ainda têm lacunas, descritas em [validacao.md](validacao.md). RN12–RN17 são propostas de evolução, não funcionalidades demonstráveis nesta versão.
-
 | Tempo | O que mostrar | O que se prova |
 |---|---|---|
 | 0:00–0:20 | O problema em uma frase | por que o produto existe |

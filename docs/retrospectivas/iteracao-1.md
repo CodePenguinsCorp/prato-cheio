@@ -22,8 +22,6 @@
 
 ## Próximos passos (para a próxima iteração)
 
-Atualização documental após a definição das [RN01–RN17](../analise.md#regras-de-negócio): validar as propostas e concluir as lacunas de RN01–RN11 antes de ampliar o fluxo. RN12–RN17 orientam a evolução abaixo. O estado atual observado no código e nos testes está em [validacao.md](../validacao.md); nele, os cenários de negócio ainda são `it.todo`, divergindo do relato histórico de testes aprovados acima. Esta revisão não reexecutou nem comprovou aquele resultado.
-
 - Implementar o registro da retirada da doação.
 - Medir o tempo entre publicação e retirada durante o piloto.
 - Definir o tratamento de doações aceitas que não forem retiradas no prazo.
