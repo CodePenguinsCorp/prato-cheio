@@ -83,6 +83,7 @@ peça a revisão de **outro integrante**. Só então faça o merge.
 
 ## Estado do Trabalho 1
 
+<<<<<<< HEAD
 O walking skeleton está implementado ponta a ponta: **um doador publica uma doação →
 uma ONG vê a doação → a ONG a aceita → a doação sai da lista e não pode ser aceita
 novamente**. A interface chama a API, as regras ficam em `src/doacoes.js` e os dados
@@ -90,6 +91,13 @@ são persistidos pelo repositório em SQLite.
 
 Os critérios de aceite estão automatizados em `tests/doacoes.test.js`, inclusive a
 proteção contra duas ONGs aceitarem a mesma doação. Rode `npm test` para verificá-los.
+=======
+O código contém o fluxo básico de **publicar → listar → aceitar e sair da lista**, com campos obrigatórios e proteção contra reserva duplicada, além da estrutura, interface, rota de saúde e banco.
+
+As regras de negócio estão em [docs/analise.md](docs/analise.md#regras-de-negócio): RN01–RN11 orientam a primeira iteração e RN12–RN17 são propostas de evolução. Ainda faltam, entre outros pontos, validar quantidade e validade, identificar a organização real na interface e exibir conflitos de aceite. Aceite representa reserva, não retirada confirmada.
+
+O atendimento das regras e dos critérios CA01–CA11 está em [docs/validacao.md](docs/validacao.md), avaliado por leitura do código. Os critérios estão em Dado/Quando/Então para as histórias 1, 3 e 4 em [docs/analise.md](docs/analise.md#critérios-de-aceite). Os cinco cenários de negócio em `tests/doacoes.test.js` permanecem como `it.todo`; o único teste ativo cobre a rota de saúde. A revisão documental não executou a suíte.
+>>>>>>> be67081 (docs(analise): consolida regras, histórias e docs.)
 
 ## Uso de IA
 
