@@ -53,8 +53,8 @@ O `src/db.js` foi desenhado para isso: ele expõe `query()` devolvendo `{ rows }
 src/server.js        entrypoint (npm start)
 src/db.js            conexão e schema do banco (pronto)
 src/app.js           rotas da API
-src/doacoes.js       regras de negócio      <- implementar (U1)
-src/repositorio.js   acesso ao banco (SQL)  <- implementar (U1)
+src/doacoes.js       regras de negócio
+src/repositorio.js   acesso ao banco (SQL)
 public/index.html    interface (funciona no celular)
 tests/               testes automatizados
 docs/analise.md      documento de análise   (Trabalho 1)
@@ -81,15 +81,15 @@ git push -u origin historia/ong-aceita-doacao
 Abra o Pull Request no GitHub, preencha o template, espere o **CI ficar verde** e
 peça a revisão de **outro integrante**. Só então faça o merge.
 
-## O que já está pronto e o que falta
+## Estado do Trabalho 1
 
-Pronto: estrutura do projeto, interface básica, rota de saúde, **conexão com o banco e o schema** (`src/db.js`), CI configurado e um teste passando (prova que a aplicação sobe).
+O walking skeleton está implementado ponta a ponta: **um doador publica uma doação →
+uma ONG vê a doação → a ONG a aceita → a doação sai da lista e não pode ser aceita
+novamente**. A interface chama a API, as regras ficam em `src/doacoes.js` e os dados
+são persistidos pelo repositório em SQLite.
 
-Falta (Trabalho 1 — walking skeleton): implementar `src/doacoes.js` (regras) e
-`src/repositorio.js` (SQL) para que a história zero funcione ponta a ponta —
-**um doador publica uma doação → uma ONG vê a doação → a ONG a aceita e ela sai da lista.**
-Os critérios de aceite estão em `tests/doacoes.test.js` como `it.todo`: troque cada um
-por um teste de verdade conforme implementa.
+Os critérios de aceite estão automatizados em `tests/doacoes.test.js`, inclusive a
+proteção contra duas ONGs aceitarem a mesma doação. Rode `npm test` para verificá-los.
 
 ## Uso de IA
 
