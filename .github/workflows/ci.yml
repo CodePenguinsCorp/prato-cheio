@@ -4,12 +4,17 @@ name: CI
 # O PR só deve ser integrado com este check verde.
 on:
   push:
-    branches: [main]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   build-e-testes:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_FILE: ':memory:'
 
     # ---------------------------------------------------------------------
     # UNIDADE 3 — quando migrarem para PostgreSQL, descomentem este bloco e
@@ -46,11 +51,19 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Verificar migração do banco
+        run: npm run db:migrar
+
       - name: Rodar os testes
         run: npm test
 
       - name: Verificar se a aplicação sobe
         run: |
           npm start &
-          sleep 3
-          curl --fail http://localhost:3000/api/saude
+          for tentativa in {1..10}; do
+            if curl --fail --silent --show-error http://localhost:3000/api/saude; then
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
