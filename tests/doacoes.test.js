@@ -26,13 +26,18 @@ describe('a aplicação sobe', () => {
 // ---------------------------------------------------------------------------
 
 describe('publicar e listar doações', () => {
+  // WS01 — docs/analise.md: publicação aparece na lista (CA01, CA05).
   it.todo('mostra a doação publicada na lista de disponíveis');
+  // WS02 — docs/analise.md: campos obrigatórios (CA02).
   it.todo('recusa doação sem os campos obrigatórios');
 });
 
 describe('aceitar uma doação', () => {
+  // WS03 — docs/analise.md: aceite vinculado à ONG (CA06).
   it.todo('marca a doação como aceita pela ONG');
+  // WS04 — docs/analise.md: aceita sai da lista (CA05, CA06).
   it.todo('remove a doação da lista de disponíveis depois de aceita');
+  // WS05 — docs/analise.md: segundo aceite recusado (CA07).
   it.todo('recusa aceitar uma doação que já foi aceita por outra ONG');
 });
 

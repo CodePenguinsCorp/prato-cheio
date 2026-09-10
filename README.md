@@ -83,13 +83,11 @@ peça a revisão de **outro integrante**. Só então faça o merge.
 
 ## O que já está pronto e o que falta
 
-Pronto: estrutura do projeto, interface básica, rota de saúde, **conexão com o banco e o schema** (`src/db.js`), CI configurado e um teste passando (prova que a aplicação sobe).
+O código contém o fluxo básico de **publicar → listar → aceitar e sair da lista**, com campos obrigatórios e proteção contra reserva duplicada, além da estrutura, interface, rota de saúde e banco.
 
-Falta (Trabalho 1 — walking skeleton): implementar `src/doacoes.js` (regras) e
-`src/repositorio.js` (SQL) para que a história zero funcione ponta a ponta —
-**um doador publica uma doação → uma ONG vê a doação → a ONG a aceita e ela sai da lista.**
-Os critérios de aceite estão em `tests/doacoes.test.js` como `it.todo`: troque cada um
-por um teste de verdade conforme implementa.
+As regras de negócio estão em [docs/analise.md](docs/analise.md#regras-de-negócio): RN01–RN11 orientam a primeira iteração e RN12–RN17 são propostas de evolução. Ainda faltam, entre outros pontos, validar quantidade e validade, identificar a organização real na interface e exibir conflitos de aceite. Aceite representa reserva, não retirada confirmada.
+
+O atendimento das regras e dos critérios CA01–CA11 está em [docs/validacao.md](docs/validacao.md), avaliado por leitura do código. Os critérios estão em Dado/Quando/Então para as histórias 1, 3 e 4 em [docs/analise.md](docs/analise.md#critérios-de-aceite). Os cinco cenários de negócio em `tests/doacoes.test.js` permanecem como `it.todo`; o único teste ativo cobre a rota de saúde. A revisão documental não executou a suíte.
 
 ## Uso de IA
 
