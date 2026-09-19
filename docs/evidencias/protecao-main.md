@@ -1,44 +1,31 @@
 # Evidência de proteção da `main`
 
-## Estado da proteção
+## Estado
 
-**Ativa**, conforme verificação do grupo em **19/09/2026**.
+A proteção da branch `main` está completamente configurada e ativa desde 19/09/2026.
 
-Repositório: [`CodePenguinsCorp/prato-cheio`](https://github.com/CodePenguinsCorp/prato-cheio)
-
-Configuração: [`Settings > Branches`](https://github.com/CodePenguinsCorp/prato-cheio/settings/branches) — visível para integrantes com permissão administrativa.
-
-## Captura da configuração
-
-![Ruleset ativo aplicado à branch main, sem usuários na lista de bypass](./protecao-main.png)
-
-A captura mostra o ruleset `block-commit-main` ativo, aplicado à branch padrão `main` e sem atores autorizados a ignorar as regras pela lista de bypass.
+O ruleset `block-commit-main` é aplicado à branch padrão `main` e possui a lista de bypass vazia.
 
 ## Controles ativos
 
-A regra aplicada à branch `main` exige:
+- Todas as alterações entram por Pull Request.
+- Cada Pull Request exige pelo menos uma aprovação.
+- Novos commits invalidam aprovações anteriores.
+- O envio mais recente exige aprovação de outro integrante.
+- Todas as conversas precisam estar resolvidas antes do merge.
+- A branch do Pull Request precisa estar atualizada com a `main` antes do merge.
+- O check `build-e-testes` precisa passar antes do merge.
+- A exclusão da branch `main` está bloqueada.
+- Force push na branch `main` está bloqueado.
+- Nenhum usuário, equipe, papel ou aplicativo possui permissão de bypass.
 
-- Pull Request antes do merge;
-- pelo menos **1 aprovação** de outro integrante;
-- aprovação de novas alterações após mudanças no PR (stale approvals);
-- conversa resolvida antes do merge;
-- check obrigatório **`build-e-testes`**, definido em `.github/workflows/ci.yml`;
-- branch atualizada com a `main` antes do merge;
-- bloqueio de force push e de exclusão da branch;
-- aplicação da regra também aos administradores, se o plano/permissões do repositório oferecer essa opção.
+## Captura
 
-## Entrega da evidência
+![Ruleset block-commit-main ativo, aplicado à branch main e com lista de bypass vazia](./protecao-main.png)
 
-Este documento faz parte da branch `docs/decisoes-projeto-protecao-main` e será entregue pelo primeiro Pull Request do grupo para a Unidade 2.
+A captura comprova que o ruleset `block-commit-main` está ativo, protege a branch `main` e não possui atores autorizados a ignorar suas regras.
 
-| Evidência                                  | Link ou registro                                                                                          |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| Proteção da branch `main`                  | **Ativa em 19/09/2026** — [captura](./protecao-main.png) e [configuração do repositório](https://github.com/CodePenguinsCorp/prato-cheio/settings/branches) |
-| Branch que entrega esta evidência          | [`docs/decisoes-projeto-protecao-main`](https://github.com/CodePenguinsCorp/prato-cheio/tree/docs/decisoes-projeto-protecao-main) |
-| URL do primeiro Pull Request do grupo      | Preencher após a abertura do PR                                                                           |
-| Check `build-e-testes` nesse PR            | Confirmar após a execução do CI                                                                           |
-| Aprovação de integrante diferente do autor | Confirmar antes do merge                                                                                   |
+## Repositório
 
-## Critério de conclusão
-
-A proteção da `main` já está configurada. A entrega estará concluída quando o primeiro PR tiver o check `build-e-testes` verde, a aprovação de outro integrante e for integrado sem bypass.
+- [`CodePenguinsCorp/prato-cheio`](https://github.com/CodePenguinsCorp/prato-cheio)
+- [`Settings > Rules > Rulesets`](https://github.com/CodePenguinsCorp/prato-cheio/settings/rules)

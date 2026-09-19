@@ -33,7 +33,26 @@ Escala: **1 (pior) a 5 (melhor)**. Os pesos refletem o impacto das RN-02/RN-03: 
 
 ## Diagramas
 
-Os diagramas de contexto e de dados/componentes serão mantidos em `docs/` e devem refletir as fronteiras já usadas: interface → API → regras de negócio → repositório → banco.
+### Contexto
+
+```mermaid
+flowchart LR
+    D[Doador] -->|publica doação| PC[Prato Cheio]
+    O[ONG ou cozinha comunitária] -->|consulta e aceita doação| PC
+    M[Marta] -->|acompanha o piloto| PC
+    VS[Vigilância sanitária] -.->|define rastreabilidade mínima| PC
+```
+
+### Componentes
+
+```mermaid
+flowchart LR
+    UI[Interface web] -->|HTTP| API[API Express]
+    API --> RN[Regras de negócio]
+    RN --> REP[Repositório]
+    REP --> DB[(SQLite)]
+    CI[GitHub Actions] -->|testes e rota de saúde| API
+```
 
 ## ADRs
 
@@ -46,7 +65,7 @@ Os ADRs 0001 a 0003 registram contexto, alternativas, decisão, consequências e
 | Consistência sob concorrência | O aceite usa escrita condicional atômica e mantém o teste `EX-02` no CI. |
 | Facilidade de uso no celular | O cadastro mantém somente tipo, quantidade e validade como campos obrigatórios. |
 | Evolução do banco | O acesso a dados permanece isolado em `src/repositorio.js` e `src/db.js`, reduzindo o impacto da migração futura para PostgreSQL. |
-| Auditabilidade das mudanças | A `main` deve ser protegida e receber mudanças por Pull Request com CI verde e revisão. A evidência fica em [`docs/evidencias/protecao-main.md`](evidencias/protecao-main.md). |
+| Auditabilidade das mudanças | A `main` está protegida e recebe mudanças por Pull Request com CI verde e revisão. A evidência fica em [`docs/evidencias/protecao-main.md`](evidencias/protecao-main.md). |
 
 ## Critérios de validação do projeto
 
@@ -57,4 +76,4 @@ Os ADRs 0001 a 0003 registram contexto, alternativas, decisão, consequências e
 
 ## Uso de IA
 
-A IA apoiou a organização das alternativas e da matriz de trade-offs. O grupo deve revisar as notas, os pesos e a decisão provisória D3 antes do merge, pois responde pela adequação ao caso e por defender as escolhas.
+A IA apoiou a organização das alternativas e da matriz de trade-offs. O grupo revisou a rastreabilidade, as notas, os pesos e a decisão provisória D3 em relação à análise da Unidade 1.
