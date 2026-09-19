@@ -1,4 +1,4 @@
-# ADR 0003 — Tratar doação aceita e não retirada sem reoferta automática
+# ADR 0003 - Tratar doação aceita e não retirada sem reoferta automática
 
 - **Data:** 2026-09-18
 - **Status:** proposto
@@ -9,8 +9,8 @@ A Unidade 1 classifica como alto o risco de uma ONG aceitar a doação e não re
 
 ## Alternativas consideradas
 
-1. **Tratamento manual da exceção** — registrar que a retirada não ocorreu e manter a doação fora da lista até decisão da Marta. Evita inventar prazo e permite colher dados no piloto, mas exige acompanhamento operacional.
-2. **Expiração e reoferta automáticas** — após um prazo configurado, cancelar a reserva e tornar a doação disponível novamente. Reduz trabalho manual, mas exige prazo validado, notificação às partes e confirmação de que o alimento ainda pode circular.
+1. **Tratamento manual da exceção** - registrar que a retirada não ocorreu e manter a doação fora da lista até decisão da Marta. Evita inventar prazo e permite colher dados no piloto, mas exige acompanhamento operacional.
+2. **Expiração e reoferta automáticas** - após um prazo configurado, cancelar a reserva e tornar a doação disponível novamente. Reduz trabalho manual, mas exige prazo validado, notificação às partes e confirmação de que o alimento ainda pode circular.
 
 ## Decisão
 

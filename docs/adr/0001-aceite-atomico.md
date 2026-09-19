@@ -1,4 +1,4 @@
-# ADR 0001 — Garantir aceite atômico da doação
+# ADR 0001 - Garantir aceite atômico da doação
 
 - **Data:** 2026-09-18
 - **Status:** aceito
@@ -9,8 +9,8 @@ As RN-02 e RN-03 determinam que uma doação aceita deixa de estar disponível e
 
 ## Alternativas consideradas
 
-1. **Atualização condicional atômica** — executar `UPDATE ... WHERE id = ? AND status = 'disponivel' RETURNING *`. É uma única operação, reduz a contenção e funciona no SQLite e no PostgreSQL; a aplicação precisa interpretar a ausência de linha como conflito.
-2. **Transação com bloqueio** — iniciar uma transação de escrita, reler a doação sob bloqueio e atualizar se ainda estiver disponível. Também preserva a regra, mas amplia o tempo de bloqueio, exige commit/rollback e varia entre SQLite e PostgreSQL.
+1. **Atualização condicional atômica** - executar `UPDATE ... WHERE id = ? AND status = 'disponivel' RETURNING *`. É uma única operação, reduz a contenção e funciona no SQLite e no PostgreSQL; a aplicação precisa interpretar a ausência de linha como conflito.
+2. **Transação com bloqueio** - iniciar uma transação de escrita, reler a doação sob bloqueio e atualizar se ainda estiver disponível. Também preserva a regra, mas amplia o tempo de bloqueio, exige commit/rollback e varia entre SQLite e PostgreSQL.
 
 ## Decisão
 

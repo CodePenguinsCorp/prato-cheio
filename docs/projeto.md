@@ -12,21 +12,21 @@
 
 As três decisões têm registro detalhado em [`docs/adr/`](adr/):
 
-- [ADR 0001 — aceite atômico](adr/0001-aceite-atomico.md);
-- [ADR 0002 — validação dos dados mínimos](adr/0002-validacao-dados-minimos.md);
-- [ADR 0003 — doação aceita e não retirada](adr/0003-doacao-nao-retirada.md).
+- [ADR 0001 - aceite atômico](adr/0001-aceite-atomico.md);
+- [ADR 0002 - validação dos dados mínimos](adr/0002-validacao-dados-minimos.md);
+- [ADR 0003 - doação aceita e não retirada](adr/0003-doacao-nao-retirada.md).
 
-## Tabela de trade-offs — D1: concorrência no aceite
+## Tabela de trade-offs - D1: concorrência no aceite
 
 Escala: **1 (pior) a 5 (melhor)**. Os pesos refletem o impacto das RN-02/RN-03: correção concorrente é mais importante que conveniência de implementação. A pontuação ponderada é `nota × peso`.
 
-| Critério | Peso | A — atualização condicional atômica | B — transação com bloqueio |
+| Critério | Peso | A - atualização condicional atômica | B - transação com bloqueio |
 |---|:--:|:--:|:--:|
-| Garante um único vencedor sob concorrência | 5 | 5 — a condição é verificada na própria escrita | 5 — o bloqueio serializa os concorrentes |
-| Simplicidade de implementação e revisão | 3 | 5 — uma instrução SQL | 2 — exige início, commit, rollback e tratamento do bloqueio |
-| Compatibilidade com SQLite e futura migração para PostgreSQL | 3 | 5 — ambos aceitam a atualização condicional | 3 — os mecanismos de bloqueio diferem entre os bancos |
-| Tempo de bloqueio e contenção | 2 | 5 — bloqueio restrito à atualização | 2 — a transação mantém o bloqueio por mais tempo |
-| Clareza do resultado para a API | 2 | 5 — linha retornada significa sucesso; ausência significa conflito | 4 — é preciso distinguir estado inválido, timeout e conflito |
+| Garante um único vencedor sob concorrência | 5 | 5 - a condição é verificada na própria escrita | 5 - o bloqueio serializa os concorrentes |
+| Simplicidade de implementação e revisão | 3 | 5 - uma instrução SQL | 2 - exige início, commit, rollback e tratamento do bloqueio |
+| Compatibilidade com SQLite e futura migração para PostgreSQL | 3 | 5 - ambos aceitam a atualização condicional | 3 - os mecanismos de bloqueio diferem entre os bancos |
+| Tempo de bloqueio e contenção | 2 | 5 - bloqueio restrito à atualização | 2 - a transação mantém o bloqueio por mais tempo |
+| Clareza do resultado para a API | 2 | 5 - linha retornada significa sucesso; ausência significa conflito | 4 - é preciso distinguir estado inválido, timeout e conflito |
 | **Total ponderado** |  | **75/75** | **52/75** |
 
 **Decisão:** adotar A. A consulta prévia pode continuar existindo para diferenciar “não encontrada” de “já aceita”, mas não é a garantia de exclusão mútua; essa garantia pertence ao `UPDATE` condicional. O teste concorrente `EX-02` deve continuar executando no CI para detectar regressões.

@@ -1,4 +1,4 @@
-# ADR 0002 — Centralizar a validação dos dados mínimos
+# ADR 0002 - Centralizar a validação dos dados mínimos
 
 - **Data:** 2026-09-18
 - **Status:** aceito
@@ -9,8 +9,8 @@ A RN-01 exige tipo, quantidade e validade, enquanto o risco de abandono pede um 
 
 ## Alternativas consideradas
 
-1. **Validação na camada de negócio** — validar e normalizar os três campos antes de chamar o repositório. O front-end pode repetir verificações para dar retorno rápido, sem ser a autoridade da regra.
-2. **Restrições no banco com tradução na camada HTTP** — deixar `NOT NULL`/`CHECK` recusarem dados inválidos e converter os erros técnicos em respostas da API. Protege a persistência, mas acopla mensagens e casos de validação ao banco.
+1. **Validação na camada de negócio** - validar e normalizar os três campos antes de chamar o repositório. O front-end pode repetir verificações para dar retorno rápido, sem ser a autoridade da regra.
+2. **Restrições no banco com tradução na camada HTTP** - deixar `NOT NULL`/`CHECK` recusarem dados inválidos e converter os erros técnicos em respostas da API. Protege a persistência, mas acopla mensagens e casos de validação ao banco.
 
 ## Decisão
 
