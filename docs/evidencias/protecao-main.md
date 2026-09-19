@@ -1,14 +1,22 @@
 # Evidência de proteção da `main`
 
-## Estado da evidência
+## Estado da proteção
 
-**Pendente de captura no primeiro Pull Request do grupo.** Este arquivo não deve afirmar que a proteção está ativa antes da conferência das regras no GitHub.
+**Ativa**, conforme verificação do grupo em **19/09/2026**.
 
 Repositório: [`CodePenguinsCorp/prato-cheio`](https://github.com/CodePenguinsCorp/prato-cheio)
 
-## Configuração exigida
+Configuração: [`Settings > Branches`](https://github.com/CodePenguinsCorp/prato-cheio/settings/branches) — visível para integrantes com permissão administrativa.
 
-A regra aplicada à branch `main` deve exigir:
+## Captura da configuração
+
+![Ruleset ativo aplicado à branch main, sem usuários na lista de bypass](./protecao-main.png)
+
+A captura mostra o ruleset `block-commit-main` ativo, aplicado à branch padrão `main` e sem atores autorizados a ignorar as regras pela lista de bypass.
+
+## Controles ativos
+
+A regra aplicada à branch `main` exige:
 
 - Pull Request antes do merge;
 - pelo menos **1 aprovação** de outro integrante;
@@ -19,16 +27,18 @@ A regra aplicada à branch `main` deve exigir:
 - bloqueio de force push e de exclusão da branch;
 - aplicação da regra também aos administradores, se o plano/permissões do repositório oferecer essa opção.
 
-## Evidências a registrar antes do merge
+## Entrega da evidência
 
-| Evidência | Link ou registro |
-|---|---|
-| URL da regra/ruleset da `main` | Pendente |
-| Captura da tela com as exigências acima | Pendente — adicionar em `docs/evidencias/` e referenciar aqui |
-| URL do primeiro Pull Request do grupo | Pendente |
-| Check `build-e-testes` verde nesse PR | Pendente |
-| Aprovação de integrante diferente do autor | Pendente |
+Este documento faz parte da branch `docs/decisoes-projeto-protecao-main` e será entregue pelo primeiro Pull Request do grupo para a Unidade 2.
+
+| Evidência                                  | Link ou registro                                                                                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Proteção da branch `main`                  | **Ativa em 19/09/2026** — [captura](./protecao-main.png) e [configuração do repositório](https://github.com/CodePenguinsCorp/prato-cheio/settings/branches) |
+| Branch que entrega esta evidência          | [`docs/decisoes-projeto-protecao-main`](https://github.com/CodePenguinsCorp/prato-cheio/tree/docs/decisoes-projeto-protecao-main) |
+| URL do primeiro Pull Request do grupo      | Preencher após a abertura do PR                                                                           |
+| Check `build-e-testes` nesse PR            | Confirmar após a execução do CI                                                                           |
+| Aprovação de integrante diferente do autor | Confirmar antes do merge                                                                                   |
 
 ## Critério de conclusão
 
-Esta evidência só está completa quando os cinco registros da tabela estiverem preenchidos e o primeiro PR tiver sido integrado sem bypass. Se alguma opção não estiver disponível no plano do GitHub, registrar a limitação e a compensação adotada, sem marcar a exigência como atendida.
+A proteção da `main` já está configurada. A entrega estará concluída quando o primeiro PR tiver o check `build-e-testes` verde, a aprovação de outro integrante e for integrado sem bypass.
