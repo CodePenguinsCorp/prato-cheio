@@ -1,4 +1,4 @@
-// Conexão com o banco. Já vem pronto — não precisa mexer agora.
+// Conexão com o banco SQLite e isolamento da suíte de testes.
 //
 // UNIDADE 1: SQLite, embutido no Node (módulo `node:sqlite`) — nada para instalar.
 // UNIDADE 3: este arquivo será refatorado para PostgreSQL. A interface abaixo
@@ -9,7 +9,11 @@
 import { createRequire } from 'node:module';
 const { DatabaseSync } = createRequire(import.meta.url)('node:sqlite');
 
-const ARQUIVO = process.env.DATABASE_FILE || 'dados.sqlite';
+// O Vitest identifica seus processos com VITEST=true. A seleção do banco de
+// testes independe de DATABASE_FILE herdado da máquina ou do CI.
+const ARQUIVO = process.env.VITEST === 'true'
+  ? ':memory:'
+  : process.env.DATABASE_FILE || 'dados.sqlite';
 
 let db;
 
@@ -46,8 +50,11 @@ export async function migrar() {
   `);
 }
 
-/** Apaga todos os dados. Usado pelos testes. */
+/** Apaga os dados apenas do banco descartável em memória usado pelos testes. */
 export async function limparBanco() {
+  if (ARQUIVO !== ':memory:') {
+    throw new Error('limparBanco só pode ser usado com banco em memória');
+  }
   conexao().exec('DELETE FROM doacoes');
 }
 
