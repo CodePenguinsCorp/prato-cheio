@@ -50,33 +50,9 @@ Não há pontuação numérica: cada célula indica trabalho ou restrição obse
 
 ## Diagramas
 
-### Contexto
+Os diagramas PlantUML complementares estão em [`docs/diagramas/contexto.md`](diagramas/contexto.md) e [`docs/diagramas/dados.md`](diagramas/dados.md). O diagrama de contexto apresenta os atores, as informações trocadas e os limites do produto; a persistência SQLite é interna. O diagrama de dados mostra a única tabela `doacoes` e suas sete colunas conforme `src/db.js`.
 
-```mermaid
-flowchart LR
-    D[Doador] -->|publica doação| PC[Prato Cheio]
-    O[ONG ou cozinha comunitária] -->|consulta e aceita doação| PC
-    M[Marta] -->|acompanha o piloto| PC
-    VS[Vigilância sanitária] -.->|define rastreabilidade mínima| PC
-```
-
-### Componentes
-
-```mermaid
-flowchart LR
-    UI[Interface web] -->|HTTP| API[API Express]
-    API --> RN[Regras de negócio]
-    RN --> REP[Repositório]
-    REP --> DB[(SQLite)]
-    CI[GitHub Actions] -->|testes e rota de saúde| API
-```
-
-### Diagramas complementares
-
-- [Contexto](diagramas/contexto.md): atores, sistema, SQLite e acompanhamento externo.
-- [Dados](diagramas/dados.md): única tabela `doacoes`, com as sete colunas de `src/db.js`.
-
-**Conferência com `src/db.js`:** não havia diagrama anterior para sustentar três divergências históricas; o novo diagrama corresponde ao schema atual. Três **lacunas do modelo para evoluções mencionadas na Análise**, sem fingir que são divergências entre arquivos: não há identidade do doador; não há registro de retirada; não há horário do aceite. Nenhuma é implementada ou mostrada como existente no diagrama. A ausência de retirada exige planilha no piloto; o tratamento de não retirada segue a decisão provisória D3, sem reoferta automática e sujeito à validação com Marta e as ONGs.
+**Conferência com `src/db.js`:** não há identidade do doador, registro de retirada ou horário do aceite. Essas lacunas não estão implementadas nem aparecem no diagrama. A ausência de retirada exige planilha no piloto; o tratamento de não retirada segue a decisão provisória D3, sem reoferta automática e sujeito à validação com Marta e as ONGs.
 
 ## ADRs
 
