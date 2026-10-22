@@ -1,7 +1,7 @@
 # ADR 0005 — Isolar o banco dos testes
 
 - **Data:** 2026-10-21 (formalização de uma decisão já visível no repositório)
-- **Status:** em vigor no código; aguardando revisão do grupo
+- **Status:** aceito no [PR #7](https://github.com/CodePenguinsCorp/prato-cheio/pull/7); em vigor no código
 
 ## Contexto
 

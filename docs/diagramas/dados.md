@@ -1,3 +1,7 @@
+Pergunta: Quais dados são persistidos e como representam o aceite exclusivo de uma doação?<br>
+Decisão que sustenta: Cadastro mínimo e aceite atômico condicionado ao status (D1 e D2; ADRs 0001 e 0002; RN-01 a RN-03).<br>
+Situação: retrato da main no commit 5d9d40f0b74b03324213eeb4dedf5e9d99da484d; schema e operações conferidos, sem alteração neste fechamento.
+
 # Modelo de dados
 
 **Fonte:** schema criado por `migrar()` em [`src/db.js`](../../src/db.js); operações em [`src/repositorio.js`](../../src/repositorio.js). O modelo representa o que está implementado, com as regras de negócio da [Análise](../analise.md).
