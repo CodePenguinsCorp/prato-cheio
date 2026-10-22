@@ -1,4 +1,4 @@
-# ADR 0001 — SQLite nesta unidade e migração para PostgreSQL na Unidade 3
+# ADR 0004 — SQLite nesta unidade e migração para PostgreSQL na Unidade 3
 
 - **Data:** 2026-10-21
 - **Status:** proposto para revisão do grupo; SQLite vigente no código

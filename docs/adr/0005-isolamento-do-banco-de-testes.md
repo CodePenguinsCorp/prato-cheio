@@ -1,4 +1,4 @@
-# ADR 0002 — Isolar o banco dos testes
+# ADR 0005 — Isolar o banco dos testes
 
 - **Data:** 2026-10-21 (formalização de uma decisão já visível no repositório)
 - **Status:** em vigor no código; aguardando revisão do grupo
