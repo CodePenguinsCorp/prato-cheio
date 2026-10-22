@@ -32,6 +32,15 @@ História zero e decisão de análise em `docs/analise.md`; RN-02/RN-03 e CA-03 
 
 ## Critério de validação
 
-Nesta unidade, `src/db.js` ainda abre SQLite, `npm test` passa e o CI usa Node sem serviço PostgreSQL. Na Unidade 3, a migração só estará validada quando schema, saúde, CA-01 a CA-05 e concorrência passarem no PostgreSQL configurado por `DATABASE_URL`.
+Nesta unidade, `npm test` comprova apenas o comportamento em SQLite: `vitest.config.js` e `src/db.js` forçam `:memory:` durante o Vitest. Esse comando **não comprova** a migração para PostgreSQL.
 
-**Comandos:** `npm test`; `npm run db:migrar` e `npm start` para o banco atual. Na Unidade 3, repetir a suíte e verificar o workflow `.github/workflows/ci.yml` com PostgreSQL. Esta segunda validação ainda não foi executada.
+Na Unidade 3, a validação exigirá um serviço PostgreSQL descartável no CI, com banco e credenciais exclusivos da execução. O job deverá fornecer `TEST_DATABASE_URL` para esse serviço, sem usar a conexão do piloto. A equipe deverá criar o script `test:postgres`, configurar a suíte para usar `DATABASE_URL` em vez de `:memory:` nesse modo e manter a recusa de limpeza fora do banco descartável. O script deverá falhar se a conexão PostgreSQL de teste não estiver disponível; um teste consultará `SELECT version()` e `SELECT current_database()` na **mesma conexão usada pelas regras de negócio**, comprovando que a suíte não executou em SQLite. O nome do banco, sozinho, não é a proteção: o serviço deve ser criado para o job e descartado ao fim dele.
+
+**Comandos previstos para o job da Unidade 3** (após implementar o adaptador e o script; `TEST_DATABASE_URL` será definido pelo serviço de teste):
+
+```bash
+DATABASE_URL="$TEST_DATABASE_URL" npm run db:migrar
+DATABASE_URL="$TEST_DATABASE_URL" npm run test:postgres
+```
+
+O segundo comando deverá executar CA-01 a CA-05 de `tests/doacoes.test.js`, o caso simultâneo EX-02 e a verificação de `/api/saude` contra PostgreSQL. Para o aceite único, EX-02 deverá obter exatamente uma resposta 200 e uma 400, com uma única ONG gravada na doação. A migração só será aceita se esses testes e o job `.github/workflows/ci.yml` passarem; `npm test` em SQLite continua sendo uma verificação separada. Esses comandos de PostgreSQL **ainda não são executáveis nesta unidade**.
