@@ -92,6 +92,21 @@ são persistidos pelo repositório em SQLite.
 Os critérios de aceite estão automatizados em `tests/doacoes.test.js`, inclusive a
 proteção contra duas ONGs aceitarem a mesma doação. Rode `npm test` para verificá-los.
 
+## Diagramas do projeto
+
+O [contexto](docs/diagramas/contexto.md) e o [modelo de dados](docs/diagramas/dados.md)
+incluem imagens PNG para leitura direta no repositório e a fonte editável em PlantUML.
+Depois de alterar um bloco PlantUML, atualize as duas imagens com:
+
+```bash
+npm run docs:diagramas -- "caminho/para/plantuml.jar"
+```
+
+A geração requer Java e o [PlantUML 1.2026.9](https://github.com/plantuml/plantuml/releases/tag/v1.2026.9).
+Essas ferramentas são necessárias apenas para gerar as imagens. O comando verifica
+a sintaxe antes de renderizar e usa arquivos temporários fora do repositório.
+Inclua a fonte Markdown e a imagem atualizada no mesmo PR.
+
 ## Uso de IA
 
 A IA pode participar da produção, mas o grupo é responsável por verificar, testar,
