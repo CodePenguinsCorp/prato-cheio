@@ -1,8 +1,10 @@
-# Diagrama de contexto
+**Pergunta:** quem participa do fluxo de publicação e aceite e onde os dados ficam?\
+**Decisão que sustenta:** manter o fluxo mínimo da Análise e persistir os dados em SQLite, como banco interno do produto ([ADR 0004](../adr/0004-evolucao-do-banco.md)).\
+**Situação:** retrato da main no commit `86bda88cee0564b0c4fd163e2f9f685959369bac`.
 
-**Pergunta:** quem participa do fluxo de publicação e aceite e onde os dados ficam?
+![Contexto do Prato Cheio: publicação pelo doador, consulta e aceite pela ONG, e requisito da Vigilância em nota](contexto.png)
 
-**Decisão que sustenta:** manter o fluxo mínimo da Análise e persistir os dados em SQLite, como banco interno do produto (ADR 0004).
+Fonte editável em PlantUML (para atualizar a imagem, veja [como gerar os diagramas](../../README.md#diagramas-do-projeto)):
 
 ```plantuml
 @startuml
@@ -12,16 +14,23 @@ actor "ONG ou cozinha comunitária" as ONG
 actor "Vigilância Sanitária" as VS
 rectangle "Prato Cheio" as PC
 
-Doador --> PC : dados da publicação
-PC --> Doador : confirmação da publicação
-ONG --> PC : consulta disponíveis
-PC --> ONG : lista de disponíveis
-ONG --> PC : pedido de aceite
-PC --> ONG : resultado do aceite
-VS ..> PC : exige rastreabilidade mínima
+Doador --> PC : publicação:\ntipo, quantidade e validade
+PC --> Doador : doação publicada\nou mensagem de erro
+ONG --> PC : consulta de doações disponíveis\n(sem filtros)
+PC --> ONG : doações disponíveis:\nid, tipo, quantidade e validade\nou mensagem de erro
+ONG --> PC : aceite:\nid da doação e nome da ONG
+PC --> ONG : doação aceita com ONG\nou mensagem de erro
+
+note right of VS
+  Requisito: rastreabilidade mínima
+  (tipo, quantidade e validade).
+  Sem troca de dados com o sistema.
+end note
 @enduml
 ```
 
-A Vigilância Sanitária aparece como origem de uma exigência da Análise, não como integração automática com o produto. O sistema usa SQLite como persistência interna, que não é um sistema externo do contexto. Marta acompanha as retiradas em uma planilha externa no piloto, sem integração com o Prato Cheio; a retirada não é registrada pelo produto.
+A Vigilância Sanitária aparece como origem de uma exigência da Análise, acompanhada de uma nota e sem seta de fluxo de informação. O sistema usa SQLite como persistência interna, que não é um sistema externo do contexto. Marta acompanha as retiradas em uma planilha externa no piloto, sem integração com o Prato Cheio; a retirada não é registrada pelo produto.
 
-O diagrama tem quatro elementos e todas as setas têm rótulos. As seis mensagens do doador e da ONG correspondem aos fluxos da interface e da API descritos em `src/app.js` e `public/app.js`.
+O diagrama tem quatro participantes (três atores e uma caixa do sistema), além de uma nota, dentro do limite de nove elementos. As seis setas têm rótulos e correspondem aos fluxos da interface e da API descritos em `src/app.js` e `public/app.js`: publicação (`POST /api/doacoes`), consulta (`GET /api/doacoes`) e aceite (`POST /api/doacoes/:id/aceitar`, com o nome da ONG no corpo).
+
+Os rótulos destacam as informações usadas nesses fluxos. Na API, a publicação e o aceite retornam a doação com as sete colunas do [modelo de dados](dados.md); a consulta retorna uma lista desses objetos, e falhas retornam uma mensagem em `erro`. A interface apresenta a confirmação ou o erro à pessoa e exibe tipo, quantidade e validade na lista.
