@@ -2,6 +2,14 @@
 
 *Trabalho 2 · máximo 4 páginas (fora diagramas) · entrega na Aula 10*
 
+**Responsáveis e revisores das etapas:**
+
+| Etapas | Responsável | Revisor |
+|---|---|---|
+| 0 (organização), 8 (conferência) e 9 (entrega) | José Henrique Brühmüller | Lucas Monich Nunes |
+| 1 (decisões), 3 (ADRs), 4 (mudança de contexto), 5 (não funcionais) e 6 (histórias) | Matheus Büsemayer | José Henrique Brühmüller |
+| 2 (diagramas) e 7 (uso de IA) | Lucas Monich Nunes | André Schultz |
+
 ## Decisões de projeto
 
 | # | Decisão | Alternativa A | Alternativa B | Escolha | Requisito ou risco da Unidade 1 |
@@ -50,11 +58,19 @@ Os dois diagramas da atividade **Modelagem do sistema** estão em [`docs/diagram
 
 A geração inicial, os três erros de contexto, as fontes, as correções e a conferência pessoal das fontes pelo grupo estão no [registro da revisão com IA](evidencias/revisao-ia-diagramas.md). A Vigilância permanece no contexto como origem de requisito, em nota sem fluxo de dados.
 
-**Conferência com `src/db.js`:** o modelo corresponde ao schema implementado, com uma entidade e nenhum relacionamento entre tabelas. Não há identidade do doador, registro de retirada ou horário do aceite. Essas lacunas não estão implementadas nem aparecem no diagrama. A ausência de retirada exige planilha no piloto; o tratamento de não retirada segue a decisão provisória D3, sem reoferta automática e sujeito à validação com Marta e as ONGs.
+**Conferência com `src/db.js`:** não foram encontradas divergências entre o modelo atual e a implementação nos três pontos abaixo.
+
+| Ponto conferido | Resultado |
+|---|---|
+| Entidades e atributos | Uma tabela `doacoes`, com as sete colunas do schema; `ong` é texto, sem chave estrangeira. |
+| Restrições e padrões | Chave primária autoincremental; cinco campos não chave `NOT NULL`; `ong` anulável; padrões `disponivel` e `datetime('now')`. |
+| Representação do aceite | `status` e `ong` representam disponível/sem ONG e aceita/com ONG. A transição condicional é feita em `src/repositorio.js`; o schema não tem `CHECK` dos estados. |
+
+Não há identidade do doador, registro de retirada ou horário do aceite no banco nem no modelo. São lacunas de evolução, não divergências. A retirada continua acompanhada em planilha; a decisão provisória D3 não autoriza reoferta automática.
 
 ## ADRs
 
-Os ADRs registram contexto, alternativas, decisão, consequências e rastreabilidade: [0001 - aceite atômico](adr/0001-aceite-atomico.md) e [0002 - dados mínimos](adr/0002-validacao-dados-minimos.md) estão aceitos; [0003 - não retirada](adr/0003-doacao-nao-retirada.md) permanece proposto; [0004 - evolução do banco](adr/0004-evolucao-do-banco.md) e [0005 - isolamento dos testes](adr/0005-isolamento-do-banco-de-testes.md) aguardam revisão do grupo. O modelo `0000-modelo-adr.md` fica disponível para decisões futuras.
+Os ADRs registram contexto, alternativas, decisão, consequências e rastreabilidade: [0001 - aceite atômico](adr/0001-aceite-atomico.md) e [0002 - dados mínimos](adr/0002-validacao-dados-minimos.md) estão aceitos; [0003 - não retirada](adr/0003-doacao-nao-retirada.md) permanece proposto; [0004 - evolução do banco](adr/0004-evolucao-do-banco.md) e [0005 - isolamento dos testes](adr/0005-isolamento-do-banco-de-testes.md) foram revisados no [PR #7](https://github.com/CodePenguinsCorp/prato-cheio/pull/7), aprovado por José e integrado na main. O modelo `0000-modelo-adr.md` fica disponível para decisões futuras.
 
 ## Requisitos não-funcionais
 
@@ -89,8 +105,10 @@ Para D3, registrar no piloto quantas doações aceitas não são retiradas e em 
 
 A IA apoiou a organização das alternativas e da matriz de trade-offs. O grupo revisou a rastreabilidade, as notas, os pesos e a decisão provisória D3 em relação à análise da Unidade 1.
 
-Na contribuição integrada da `main`, a IA analisou o código e a Análise, implementou a proteção e seu teste, e redigiu este projeto, diagramas e ADRs. A revisão do grupo sobre essa contribuição continua pendente; o registro de revisão acima se refere às decisões D1 a D3 e à matriz de concorrência. Na primeira versão da decisão de aceite atômico dessa contribuição (D1 neste documento), a IA sugeriu consultar o status e depois atualizar sem condição como alternativa viável. A conferência com RN-03 mostrou que duas ONGs poderiam passar pela consulta e confirmar o aceite; a alternativa foi corrigida para transação com bloqueio antes da consulta. Já havia um diagrama Mermaid na main antes desta branch; ele foi substituído por PlantUML, sem mudança no schema.
+Na contribuição integrada da `main`, a IA analisou o código e a Análise, implementou a proteção e seu teste, e redigiu este projeto, diagramas e ADRs. Essa contribuição foi revisada por José no [PR #7](https://github.com/CodePenguinsCorp/prato-cheio/pull/7); a modelagem foi revisada no [PR #8](https://github.com/CodePenguinsCorp/prato-cheio/pull/8). Na primeira versão da decisão de aceite atômico dessa contribuição (D1 neste documento), a IA sugeriu consultar o status e depois atualizar sem condição como alternativa viável. A conferência com RN-03 mostrou que duas ONGs poderiam passar pela consulta e confirmar o aceite; a alternativa foi corrigida para transação com bloqueio antes da consulta. Já havia um diagrama Mermaid na main antes desta branch; ele foi substituído por PlantUML, sem mudança no schema.
 
 Nesta integração, a IA conciliou os conteúdos das duas branches e renumerou os ADRs de evolução do banco e isolamento dos testes para 0004 e 0005, preservando os ADRs existentes.
 
 Na branch de modelagem, a IA revisou contexto e dados, detalhou as trocas de informação, colocou o requisito da Vigilância em nota e gerou imagens PNG com comando de atualização documentado. O [registro da revisão](evidencias/revisao-ia-diagramas.md) preserva os três erros da versão inicial, suas correções, a conferência pessoal das fontes pelo grupo e as ressalvas técnicas.
+
+Neste fechamento, a IA apoiou os campos iniciais dos diagramas e a conferência com o banco; o grupo definiu responsáveis e revisores.

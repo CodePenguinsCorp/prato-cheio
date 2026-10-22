@@ -1,3 +1,7 @@
+Pergunta: Quem troca informações com o Prato Cheio no fluxo de publicação, consulta e aceite?<br>
+Decisão que sustenta: Manter o fluxo mínimo da Análise, com SQLite interno nesta unidade (D1, D2 e D4; ADRs 0001, 0002 e 0004).<br>
+Situação: retrato da main no commit 5d9d40f0b74b03324213eeb4dedf5e9d99da484d.
+
 # Diagrama de contexto
 
 O diagrama representa a fronteira do Prato Cheio no fluxo implementado de publicação, consulta e aceite. O produto aparece como uma única caixa; doador e ONG ou cozinha comunitária trocam as informações indicadas nas setas.

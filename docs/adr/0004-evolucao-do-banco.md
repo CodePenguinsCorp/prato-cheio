@@ -1,7 +1,7 @@
 # ADR 0004 — SQLite nesta unidade e migração para PostgreSQL na Unidade 3
 
 - **Data:** 2026-10-21
-- **Status:** proposto para revisão do grupo; SQLite vigente no código
+- **Status:** aceito no [PR #7](https://github.com/CodePenguinsCorp/prato-cheio/pull/7); SQLite vigente no código
 
 ## Contexto
 
