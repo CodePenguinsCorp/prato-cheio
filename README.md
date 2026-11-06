@@ -15,32 +15,27 @@ Conecta doadores de alimentos excedentes a ONGs, antes que a comida se perca.
 
 ## Como rodar
 
-Requisito: **Node.js 22.13 ou superior**. Mais nada — o banco da Unidade 1 é SQLite, embutido no próprio Node.
+Requisitos: **Node.js 22.13 ou superior** e um **PostgreSQL** acessível por `DATABASE_URL` (veja `.env.example`; para subir um local: `docker run -d --name pratocheio-pg -e POSTGRES_USER=pratocheio -e POSTGRES_PASSWORD=pratocheio -e POSTGRES_DB=pratocheio -p 5432:5432 postgres:16-alpine`).
 
 > Esta é a **stack preferencial** da disciplina. Se o seu grupo optar por outra, registre o ADR de justificativa e garanta os mesmos compromissos: repositório público com CI verde, rota de saúde, testes por um comando, os três comandos documentados aqui no README e banco relacional migrado para PostgreSQL na Unidade 3.
 
 ```bash
 npm install       # só na primeira vez
-npm run db:migrar # cria o schema (arquivo dados.sqlite)
+npm run db:migrar # cria o schema no PostgreSQL (DATABASE_URL)
 npm start         # sobe em http://localhost:3000
-npm test          # roda os testes
+npm test          # roda os testes (precisa de TEST_DATABASE_URL)
 npm run dev       # sobe recarregando a cada alteração
 ```
 
-Os testes usam SQLite **em memória**, então não sujam o banco de desenvolvimento.
+Os testes **apagam as doações** do banco apontado por `TEST_DATABASE_URL`: use um banco descartável, nunca o do piloto. Fora do CI, `DATABASE_URL` não é usado pelos testes; no CI ele é o serviço PostgreSQL descartável do job.
 
-> Ao rodar `npm test` o Node imprime `ExperimentalWarning: SQLite is an experimental feature`.
-> É esperado — o módulo embutido `node:sqlite` ainda é marcado como experimental. Não é erro e não reprova o CI.
-
-> **Atenção:** não deixe o repositório dentro de uma pasta sincronizada (OneDrive, Google Drive, Dropbox) nem em disco de rede. O SQLite precisa de trava de arquivo e nesses lugares falha com `disk I/O error`. Clone em uma pasta local comum, por exemplo `~/dev/`.
-
-## O banco: SQLite agora, PostgreSQL depois
+## O banco: SQLite até a Unidade 2, PostgreSQL agora
 
 | Unidade        | Banco                                | O que precisa instalar                                 |
 | -------------- | ------------------------------------ | ------------------------------------------------------ |
 | 1 — Análise    | **SQLite** (`node:sqlite`, embutido) | nada além do Node                                      |
 | 2 — Projeto    | SQLite                               | nada                                                   |
-| 3 — Construção | **PostgreSQL** (após refatorar)      | um PostgreSQL acessível — o caminho é escolha do grupo |
+| 3 — Construção | **PostgreSQL** (migrado)             | um PostgreSQL acessível — o caminho é escolha do grupo |
 
 A troca não é acidente de percurso: na Unidade 2 vocês registram a decisão em um **ADR** (alternativas, consequências, riscos) e na Unidade 3 executam a **refatoração** — com os testes existentes provando que o comportamento se manteve.
 
@@ -87,7 +82,7 @@ peça a revisão de **outro integrante**. Só então faça o merge.
 O walking skeleton está implementado ponta a ponta: **um doador publica uma doação →
 uma ONG vê a doação → a ONG a aceita → a doação sai da lista e não pode ser aceita
 novamente**. A interface chama a API, as regras ficam em `src/doacoes.js` e os dados
-são persistidos pelo repositório em SQLite.
+são persistidos pelo repositório em PostgreSQL.
 
 Os critérios de aceite estão automatizados em `tests/doacoes.test.js`, inclusive a
 proteção contra duas ONGs aceitarem a mesma doação. Rode `npm test` para verificá-los.
