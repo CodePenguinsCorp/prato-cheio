@@ -15,7 +15,7 @@
 - **Evidência de que o comportamento se manteve:**
   - testes antes da mudança: 15 passando (SQLite em memória)
   - testes depois da mudança: 15 passando (PostgreSQL 16)
-  - link da execução do CI verde: (preencher com o link do run do PR da migração)
+  - link da execução do CI verde: https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/42309691752
 
 ## Refatoração 2 — Separar a validação de entrada das regras de negócio
 
