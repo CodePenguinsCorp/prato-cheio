@@ -20,16 +20,16 @@ describe('isolamento do banco de testes', () => {
       import { migrar, limparBanco, query, encerrar } from './src/db.js';
       if (process.env.VITEST === 'true') {
         await migrar();
-        await query("INSERT INTO doacoes (tipo, quantidade, validade) VALUES (?, ?, ?)", ['Teste', '1', '2026-10-21']);
+        await query("INSERT INTO doacoes (tipo, quantidade, validade) VALUES ($1, $2, $3)", ['Teste', '1', '2026-10-21']);
         await limparBanco();
-        const { rows } = await query('SELECT COUNT(*) AS total FROM doacoes');
+        const { rows } = await query('SELECT COUNT(*)::int AS total FROM doacoes');
         if (rows[0].total !== 0) process.exitCode = 2;
       } else {
         try {
           await limparBanco();
           process.exitCode = 3;
         } catch (erro) {
-          if (!erro.message.includes('banco em memória')) process.exitCode = 4;
+          if (!erro.message.includes('banco descartável')) process.exitCode = 4;
         }
       }
       await encerrar();

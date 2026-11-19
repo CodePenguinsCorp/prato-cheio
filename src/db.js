@@ -1,63 +1,70 @@
-// Conexão com o banco SQLite e isolamento da suíte de testes.
+// Conexão com o banco PostgreSQL e isolamento da suíte de testes.
 //
-// UNIDADE 1: SQLite, embutido no Node (módulo `node:sqlite`) — nada para instalar.
-// UNIDADE 3: este arquivo será refatorado para PostgreSQL. A interface abaixo
-//            (`query` devolvendo `{ rows }`) foi desenhada para que a troca fique
-//            contida aqui, sem espalhar mudança pelo resto do código.
-// `node:sqlite` é módulo embutido do Node 22+. Carregado via createRequire porque
-// algumas ferramentas (como o Vite/Vitest) ainda não o reconhecem como embutido.
-import { createRequire } from 'node:module';
-const { DatabaseSync } = createRequire(import.meta.url)('node:sqlite');
+// A interface pública (`query` devolvendo `{ rows }`) é a mesma da época do SQLite:
+// a troca de banco fica contida aqui e em src/repositorio.js (ver ADR 0004).
+import pg from 'pg';
 
-// O Vitest identifica seus processos com VITEST=true. A seleção do banco de
-// testes independe de DATABASE_FILE herdado da máquina ou do CI.
-const ARQUIVO = process.env.VITEST === 'true'
-  ? ':memory:'
-  : process.env.DATABASE_FILE || 'dados.sqlite';
+const EM_TESTE = process.env.VITEST === 'true';
 
-let db;
+// Durante o Vitest a conexão vem de TEST_DATABASE_URL. DATABASE_URL só vale no CI,
+// onde o serviço PostgreSQL é descartável. Assim, `npm test` numa máquina com
+// DATABASE_URL apontando para o banco do piloto nunca limpa esse banco.
+function resolverUrl() {
+  if (EM_TESTE) {
+    return process.env.TEST_DATABASE_URL
+      || (process.env.CI === 'true' ? process.env.DATABASE_URL : undefined);
+  }
+  return process.env.DATABASE_URL;
+}
+
+let pool;
 
 export function conexao() {
-  if (!db) db = new DatabaseSync(ARQUIVO);
-  return db;
+  if (!pool) {
+    const url = resolverUrl();
+    if (!url) {
+      throw new Error(EM_TESTE
+        ? 'defina TEST_DATABASE_URL (banco descartável) para rodar os testes'
+        : 'defina DATABASE_URL para conectar ao PostgreSQL');
+    }
+    pool = new pg.Pool({ connectionString: url });
+  }
+  return pool;
 }
 
 /**
  * Executa uma consulta e devolve { rows }.
- * Use `?` como marcador de parâmetro (evita injeção de SQL):
- *   query('SELECT * FROM doacoes WHERE id = ?', [id])
+ * Use $1, $2, … como marcadores de parâmetro (evita injeção de SQL):
+ *   query('SELECT * FROM doacoes WHERE id = $1', [id])
  */
 export async function query(sql, valores = []) {
-  const stmt = conexao().prepare(sql);
-  const ehLeitura = /^\s*(select|with)/i.test(sql) || /returning/i.test(sql);
-  if (ehLeitura) return { rows: stmt.all(...valores) };
-  const info = stmt.run(...valores);
-  return { rows: [], alteradas: info.changes };
+  const { rows } = await conexao().query(sql, valores);
+  return { rows };
 }
 
 /** Cria o schema, se ainda não existir. Rodado por `npm run db:migrar` e ao subir o servidor. */
 export async function migrar() {
-  conexao().exec(`
+  await conexao().query(`
     CREATE TABLE IF NOT EXISTS doacoes (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      id          SERIAL PRIMARY KEY,
       tipo        TEXT NOT NULL,
       quantidade  TEXT NOT NULL,
       validade    TEXT NOT NULL,
       status      TEXT NOT NULL DEFAULT 'disponivel',
       ong         TEXT,
-      criada_em   TEXT NOT NULL DEFAULT (datetime('now'))
+      criada_em   TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
 }
 
-/** Apaga os dados apenas do banco descartável em memória usado pelos testes. */
+/** Apaga os dados apenas do banco descartável usado pelos testes. */
 export async function limparBanco() {
-  if (ARQUIVO !== ':memory:') {
-    throw new Error('limparBanco só pode ser usado com banco em memória');
+  if (!EM_TESTE) {
+    throw new Error('limparBanco só pode ser usado pela suíte de testes (banco descartável)');
   }
-  conexao().exec('DELETE FROM doacoes');
+  await conexao().query('TRUNCATE doacoes RESTART IDENTITY');
 }
 
 export async function encerrar() {
-  if (db) { db.close(); db = undefined; }
+  if (pool) { await pool.end(); pool = undefined; }
 }
