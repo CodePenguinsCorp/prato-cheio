@@ -2,7 +2,7 @@
 
 *Trabalho 3 · confronto do produto com os critérios de aceite escritos na Unidade 1*
 
-Critérios copiados de `docs/analise.md`. Evidência dos testes: CI verde sobre PostgreSQL ([execução 42309691752](https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/42309691752)), que roda `npm test` (`tests/doacoes.test.js`). Passos citados são os de `docs/demo.md`.
+Critérios copiados de `docs/analise.md`. Evidências: [CI do commit `8d6e5fd`](https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/44613122929) em PostgreSQL 16 e [validação local de 24/11/2026](evidencias/validacao-aula-13.md) em PostgreSQL 18.3, ambas com 15 testes passando. Os passos citados são os de [docs/demo.md](demo.md); a execução local da interface e da API foi assistida pelo Codex, a pedido de André Schultz. A reprodução independente por outro integrante permanece pendente e não é apresentada como concluída.
 
 | # | Critério de aceite (da Unidade 1) | Atende? | Evidência |
 |:--:|---|:--:|---|
@@ -28,9 +28,7 @@ Nenhum dos cinco critérios da Unidade 1 ficou em "parcial" ou "não atende". O 
 
 ## Uso de IA
 
-[REVISAR antes de entregar: o texto abaixo descreve o que foi feito com IA nesta entrega; o grupo precisa confirmar que verificou cada ponto.]
-
-- **O que a IA fez nesta iteração:** redigiu o rascunho de `docs/demo.md`, `docs/validacao.md` e `docs/retrospectivas/3.md` a partir do código, dos testes, do `docs/analise.md` e do histórico do Git.
-- **O que o grupo verificou:** ____ (listar: executou os passos da demo, conferiu cada status contra o teste e o CI, rodou `npm test`).
-- **O que alteramos:** ____.
-- **Limite:** a IA não executou a demo nem a suíte localmente (sem PostgreSQL disponível); os status "atende" se apoiam no CI verde e na leitura dos testes, e só valem depois que um integrante rodar os passos e confirmar.
+- **Geração inicial declarada no PR:** rascunhos de `docs/demo.md`, `docs/validacao.md` e `docs/retrospectivas/3.md` a partir do código, dos testes, da Análise e do histórico Git.
+- **Revisão de 24/11/2026:** a pedido de André Schultz, o Codex confrontou os cinco critérios com os testes, leu os logs do CI, instalou as dependências em clone novo, executou os 15 testes sobre PostgreSQL descartável e verificou publicação, listagem e aceite pela interface, erros pela API e dados finais no banco.
+- **O que foi corrigido:** preparo reproduzível da demo, separação dos bancos, data e natureza da validação, links de evidência, distribuição de contribuição informada por André e registros de IA antes incompletos.
+- **Limites:** não houve execução manual independente por outro integrante nem validação do piloto, da conexão instável ou da meta de retiradas. A IA não confirma essas atividades; os status dos CA se apoiam nos testes e na execução técnica registrada.
