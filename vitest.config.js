@@ -1,6 +1,7 @@
 export default {
   test: {
-    // SQLite em memória: os testes não tocam o arquivo do banco de desenvolvimento.
-    env: { DATABASE_FILE: ':memory:' }
+    // Os arquivos de teste compartilham o mesmo banco PostgreSQL descartável
+    // (limparBanco/TRUNCATE): rodam um por vez para não se atropelarem.
+    fileParallelism: false
   }
 };
