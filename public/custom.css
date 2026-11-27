@@ -519,6 +519,11 @@ input[aria-invalid="true"] {
   opacity: .72;
 }
 
+.acompanhamento { margin-top: 24px; padding: 24px; }
+.acompanhamento form { max-width: 520px; }
+.acompanhamento .donation-list { height: auto; max-height: 450px; overflow: auto; padding: 16px 0; }
+.acompanhamento .donation-card { overflow-wrap: anywhere; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
 

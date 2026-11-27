@@ -34,6 +34,14 @@ export async function buscarPorId(id) {
   return rows[0];
 }
 
+export async function listarDoDoador(doador) {
+  const { rows } = await query(
+    'SELECT * FROM doacoes WHERE doador = $1 ORDER BY criada_em ASC, id ASC',
+    [doador]
+  );
+  return rows;
+}
+
 export async function aceitar(id, ong) {
   const { rows } = await query(
     `UPDATE doacoes

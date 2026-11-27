@@ -4,6 +4,7 @@ const botaoPublicar = document.getElementById('publicar');
 const tipoInput = document.getElementById('tipo');
 const quantidadeInput = document.getElementById('quantidade');
 const validadeInput = document.getElementById('validade');
+const doadorInput = document.getElementById('doador');
 const nomeOng = document.getElementById('nome-ong');
 const totalDisponiveis = document.getElementById('total-disponiveis');
 const impactoTexto = document.getElementById('impacto-texto');
@@ -219,6 +220,7 @@ async function aceitarDoacao(doacao, botao) {
 form.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const validacoes = [
+    [validarObrigatorio(doadorInput, 'campo-doador', 'erro-doador', 'Informe o nome do doador.'), doadorInput],
     [validarTipo(), tipoInput],
     [validarQuantidade(), quantidadeInput],
     [validarValidade(), validadeInput]
@@ -230,6 +232,7 @@ form.addEventListener('submit', async (evento) => {
   }
   const dados = new FormData(form);
   const doacao = {
+    doador: dados.get('doador').trim(),
     tipo: dados.get('tipo').trim(),
     quantidade: dados.get('quantidade').trim(),
     validade: dados.get('validade')
@@ -243,7 +246,10 @@ form.addEventListener('submit', async (evento) => {
       body: JSON.stringify(doacao)
     });
     await lerResposta(resposta);
+    const nomePublicado = doadorInput.value.trim();
     form.reset();
+    doadorInput.value = nomePublicado;
+    document.getElementById('consulta-doador').value = nomePublicado;
     document.getElementById('validade').min = new Date().toISOString().slice(0, 10);
     mostrarToast('Doação publicada e disponível para as organizações.');
     await carregar();
@@ -262,3 +268,41 @@ validadeInput.addEventListener('change', validarValidade);
 
 validadeInput.min = new Date().toISOString().slice(0, 10);
 carregar();
+
+function renderizarAcompanhamento(destino, doacoes) {
+  const itens = doacoes.map(doacao => {
+    const item = document.createElement('li');
+    item.className = 'donation-card';
+    const conteudo = document.createElement('div');
+    const titulo = document.createElement('h3');
+    titulo.textContent = `#${doacao.id} — ${doacao.tipo}`;
+    const detalhes = document.createElement('p');
+    detalhes.textContent = `${doacao.quantidade} • ${doacao.status === 'disponivel' ? 'Disponível' : doacao.status === 'coletada' ? 'Coletada' : 'Aceita'}${doacao.ong ? ` por ${doacao.ong}` : ''}`;
+    conteudo.append(titulo, detalhes);
+    item.append(conteudo);
+    return item;
+  });
+  if (!itens.length) {
+    const vazio = document.createElement('li');
+    vazio.className = 'empty-state';
+    vazio.textContent = 'Nenhuma doação encontrada para esse nome.';
+    itens.push(vazio);
+  }
+  destino.replaceChildren(...itens);
+}
+
+document.getElementById('form-minhas').addEventListener('submit', async evento => {
+  evento.preventDefault();
+  const destino = document.getElementById('minhas-doacoes');
+  destino.setAttribute('aria-busy', 'true');
+  try {
+    const nome = document.getElementById('consulta-doador').value.trim();
+    const doacoes = await lerResposta(await fetch(`/api/doacoes/doador?${new URLSearchParams({ nome })}`));
+    renderizarAcompanhamento(destino, doacoes);
+  } catch (erro) {
+    destino.replaceChildren();
+    mostrarToast(erro.message, 'error');
+  } finally {
+    destino.setAttribute('aria-busy', 'false');
+  }
+});

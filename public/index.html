@@ -51,6 +51,11 @@
         </div>
 
         <form id="form-doacao" novalidate>
+          <div class="field" id="campo-doador">
+            <label for="doador">Nome do doador</label>
+            <input id="doador" name="doador" type="text" placeholder="Ex.: Padaria Pão Bom" autocomplete="organization" aria-describedby="erro-doador" required>
+            <p class="field-error" id="erro-doador">Informe o nome do doador.</p>
+          </div>
           <div class="field" id="campo-tipo">
             <label for="tipo">Tipo de alimento</label>
             <input id="tipo" name="tipo" type="text" placeholder="Ex.: frutas, pães ou marmitas" autocomplete="off" aria-describedby="erro-tipo" required>
@@ -98,6 +103,18 @@
           <li class="loading-state"><span class="spinner" aria-hidden="true"></span>Carregando doações...</li>
         </ul>
       </article>
+    </section>
+    <section class="panel acompanhamento" aria-labelledby="titulo-minhas">
+      <h2 id="titulo-minhas">Minhas doações</h2>
+      <p>Use o mesmo nome informado na publicação. Esta identificação não tem login: qualquer pessoa que saiba o nome pode consultar as ofertas.</p>
+      <form id="form-minhas">
+        <div class="field">
+          <label for="consulta-doador">Nome do doador para consulta</label>
+          <input id="consulta-doador" name="nome" required autocomplete="organization">
+        </div>
+        <button class="button button-primary" type="submit">Consultar minhas doações</button>
+      </form>
+      <ul class="donation-list" id="minhas-doacoes" aria-live="polite"></ul>
     </section>
   </main>
 

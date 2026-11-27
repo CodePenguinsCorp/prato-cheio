@@ -44,13 +44,17 @@ export async function criarDoacao({ tipo, quantidade, validade, doador } = {}) {
     tipo: exigirTexto(tipo, 'tipo'),
     quantidade: exigirTexto(quantidade, 'quantidade'),
     validade: exigirDataIso(validade, 'validade'),
-    doador
+    doador: exigirTexto(doador, 'doador')
   });
 }
 
 // História zero — "uma ONG vê as doações disponíveis".
 export async function listarDisponiveis() {
   return repo.listarDisponiveis();
+}
+
+export async function listarDoDoador(nome) {
+  return repo.listarDoDoador(exigirTexto(nome, 'doador'));
 }
 
 // História zero — "uma ONG aceita uma doação".
