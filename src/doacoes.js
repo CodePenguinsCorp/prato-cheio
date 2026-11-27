@@ -8,6 +8,19 @@ function exigirTexto(valor, campo) {
   return valor.trim();
 }
 
+function exigirId(id) {
+  const numero = Number(id);
+  if (!Number.isInteger(numero) || numero <= 0) throw new Error('id da doação é inválido');
+  return numero;
+}
+
+async function exigirEstado(id, estado, mensagem) {
+  const doacao = await repo.buscarPorId(id);
+  if (!doacao) throw new Error('doação não encontrada');
+  if (doacao.status !== estado) throw new Error(mensagem);
+  return doacao;
+}
+
 function exigirInicio(valor, campo, padrao, descricao) {
   const texto = exigirTexto(valor, campo);
   if (!padrao.test(texto)) {
@@ -60,16 +73,10 @@ export async function listarDoDoador(nome) {
 // História zero — "uma ONG aceita uma doação".
 // Regra do caso: uma doação aceita não fica disponível para outra ONG.
 export async function aceitar(id, ong) {
-  const idNumerico = Number(id);
-  if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
-    throw new Error('id da doação é inválido');
-  }
+  const idNumerico = exigirId(id);
 
   const nomeOng = exigirInicio(ong, 'ong', /^[\p{L}\p{N}]/u, 'uma letra ou número');
-  const doacao = await repo.buscarPorId(idNumerico);
-
-  if (!doacao) throw new Error('doação não encontrada');
-  if (doacao.status !== 'disponivel') throw new Error('doação já foi aceita');
+  await exigirEstado(idNumerico, 'disponivel', 'doação já foi aceita');
 
   const aceita = await repo.aceitar(idNumerico, nomeOng);
   if (!aceita) throw new Error('doação já foi aceita por outra ONG');
@@ -81,29 +88,19 @@ export async function listarDaOng(nome) {
 }
 
 export async function coletar(id, voluntario) {
-  const idNumerico = Number(id);
-  if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
-    throw new Error('id da doação é inválido');
-  }
+  const idNumerico = exigirId(id);
   const nome = exigirTexto(voluntario, 'voluntário');
-  const doacao = await repo.buscarPorId(idNumerico);
-  if (!doacao) throw new Error('doação não encontrada');
-  if (doacao.status !== 'aceita') throw new Error('somente doação aceita pode ser coletada');
+  await exigirEstado(idNumerico, 'aceita', 'somente doação aceita pode ser coletada');
   const coletada = await repo.coletar(idNumerico, nome);
   if (!coletada) throw new Error('somente doação aceita pode ser coletada');
   return coletada;
 }
 
 export async function devolver(id, ong, motivo) {
-  const idNumerico = Number(id);
-  if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
-    throw new Error('id da doação é inválido');
-  }
+  const idNumerico = exigirId(id);
   const nome = exigirTexto(ong, 'ong');
   const justificativa = exigirTexto(motivo, 'motivo');
-  const doacao = await repo.buscarPorId(idNumerico);
-  if (!doacao) throw new Error('doação não encontrada');
-  if (doacao.status !== 'aceita') throw new Error('somente doação aceita pode ser devolvida');
+  const doacao = await exigirEstado(idNumerico, 'aceita', 'somente doação aceita pode ser devolvida');
   if (doacao.ong !== nome) throw new Error('somente a ONG que aceitou pode devolver');
   const devolvida = await repo.devolver(idNumerico, nome, justificativa);
   if (!devolvida) throw new Error('a doação mudou; consulte a situação antes de devolver');
