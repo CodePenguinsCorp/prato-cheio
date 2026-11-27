@@ -542,6 +542,14 @@ input[aria-invalid="true"] {
 .follow-list:empty { display: none; }
 .follow-list .donation-card { grid-template-columns: 1fr; gap: 14px; }
 .follow-list .donation-title { white-space: normal; overflow-wrap: anywhere; }
+.card-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.card-action .field { margin: 0; }
 .follow-message { color: var(--muted); font-size: .86rem; }
 
 .situation {
@@ -595,6 +603,7 @@ input[aria-invalid="true"] {
   .follow-panel { padding: 22px; }
   .query-form { grid-template-columns: 1fr; }
   .query-form .button { margin-top: 0; }
+  .card-action { grid-template-columns: 1fr; }
   .toast-region { right: 16px; bottom: 16px; }
 }
 

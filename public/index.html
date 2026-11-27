@@ -105,6 +105,25 @@
       </article>
     </section>
 
+    <section class="panel follow-panel" id="doacoes-da-ong" aria-labelledby="titulo-ong">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">Para ONGs e voluntários</p>
+          <h2 id="titulo-ong">Doações da organização</h2>
+          <p>Veja o que a organização aceitou e confirme quando a coleta acontecer.</p>
+        </div>
+      </div>
+      <form class="query-form" id="form-ong" novalidate>
+        <div class="field" id="campo-consulta-ong">
+          <label for="consulta-ong">Nome da organização</label>
+          <input id="consulta-ong" type="text" placeholder="Ex.: Casa Esperança" autocomplete="organization" aria-describedby="erro-consulta-ong">
+          <p class="field-error" id="erro-consulta-ong">Informe o nome da organização.</p>
+        </div>
+        <button class="button button-accept" type="submit">Ver doações aceitas</button>
+      </form>
+      <ul class="follow-list" id="lista-ong" aria-live="polite"></ul>
+    </section>
+
     <section class="panel follow-panel" id="minhas-doacoes" aria-labelledby="titulo-minhas">
       <div class="panel-heading">
         <div>
