@@ -5,11 +5,15 @@
 //   const { rows } = await query('SELECT * FROM doacoes WHERE id = $1', [id]);
 import { query } from './db.js';
 
+// Colunas das respostas gerais. O motivo da devolução fica de fora: só a
+// consulta do doador o devolve.
+const COLUNAS = 'id, tipo, quantidade, validade, status, ong, criada_em, doador, voluntario, coletada_em';
+
 export async function inserir({ tipo, quantidade, validade, doador, criadaEm }) {
   const { rows } = await query(
     `INSERT INTO doacoes (tipo, quantidade, validade, doador, criada_em)
      VALUES ($1, $2, $3, $4, $5)
-     RETURNING *`,
+     RETURNING ${COLUNAS}`,
     [tipo, quantidade, validade, doador, criadaEm]
   );
   return rows[0];
@@ -17,7 +21,7 @@ export async function inserir({ tipo, quantidade, validade, doador, criadaEm }) 
 
 export async function listarDisponiveis() {
   const { rows } = await query(
-    `SELECT *
+    `SELECT ${COLUNAS}
        FROM doacoes
       WHERE status = $1
       ORDER BY criada_em ASC, id ASC`,
@@ -41,7 +45,7 @@ export async function listarPorDoador(doador) {
 
 export async function listarPorOng(ong) {
   const { rows } = await query(
-    `SELECT *
+    `SELECT ${COLUNAS}
        FROM doacoes
       WHERE lower(ong) = lower($1)
       ORDER BY criada_em ASC, id ASC`,
@@ -63,7 +67,7 @@ export async function aceitar(id, ong) {
     `UPDATE doacoes
         SET status = 'aceita', ong = $1
       WHERE id = $2 AND status = 'disponivel'
-      RETURNING *`,
+      RETURNING ${COLUNAS}`,
     [ong, id]
   );
   return rows[0];
@@ -75,8 +79,20 @@ export async function confirmarColeta(id, voluntario, coletadaEm) {
     `UPDATE doacoes
         SET status = 'coletada', voluntario = $1, coletada_em = $2
       WHERE id = $3 AND status = 'aceita'
-      RETURNING *`,
+      RETURNING ${COLUNAS}`,
     [voluntario, coletadaEm, id]
+  );
+  return rows[0];
+}
+
+// Devolver desfaz o aceite: a doação volta para a lista sem rastro da ONG.
+export async function devolver(id, ong, motivo) {
+  const { rows } = await query(
+    `UPDATE doacoes
+        SET status = 'disponivel', ong = NULL, voluntario = NULL, coletada_em = NULL, motivo_devolucao = $1
+      WHERE id = $2 AND status = 'aceita' AND ong = $3
+      RETURNING ${COLUNAS}`,
+    [motivo, id, ong]
   );
   return rows[0];
 }

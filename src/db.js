@@ -61,6 +61,7 @@ export async function migrar() {
   await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS doador TEXT');
   await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS voluntario TEXT');
   await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS coletada_em TIMESTAMPTZ');
+  await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS motivo_devolucao TEXT');
 }
 
 /** Apaga os dados apenas do banco descartável usado pelos testes. */
