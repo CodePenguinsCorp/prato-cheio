@@ -5,6 +5,9 @@ const tipoInput = document.getElementById('tipo');
 const quantidadeInput = document.getElementById('quantidade');
 const validadeInput = document.getElementById('validade');
 const doadorInput = document.getElementById('doador');
+const consultaDoador = document.getElementById('consulta-doador');
+const listaMinhas = document.getElementById('lista-minhas');
+let doadorConsultado = '';
 const nomeOng = document.getElementById('nome-ong');
 const totalDisponiveis = document.getElementById('total-disponiveis');
 const impactoTexto = document.getElementById('impacto-texto');
@@ -133,9 +136,7 @@ async function lerResposta(resposta) {
   return corpo;
 }
 
-function criarCartao(doacao) {
-  const item = document.createElement('li');
-  item.className = 'donation-card';
+function criarResumo(doacao) {
   const principal = document.createElement('div');
   principal.className = 'donation-main';
   const topo = document.createElement('div');
@@ -160,12 +161,18 @@ function criarCartao(doacao) {
   validade.append(document.createTextNode(`Retirar até ${formatarData(doacao.validade)}`));
   meta.append(quantidade, validade);
   principal.append(topo, meta);
+  return principal;
+}
+
+function criarCartao(doacao) {
+  const item = document.createElement('li');
+  item.className = 'donation-card';
   const aceitar = document.createElement('button');
   aceitar.className = 'button button-accept';
   aceitar.type = 'button';
   aceitar.textContent = 'Aceitar doação';
   aceitar.addEventListener('click', () => aceitarDoacao(doacao, aceitar));
-  item.append(principal, aceitar);
+  item.append(criarResumo(doacao), aceitar);
   return item;
 }
 
@@ -189,6 +196,46 @@ function renderizarErro() {
   item.className = 'error-state';
   item.innerHTML = '<h3>Não foi possível carregar</h3><p>Confira se o servidor está ativo e atualize a página para tentar novamente.</p>';
   lista.replaceChildren(item);
+}
+
+function mensagemNaLista(alvo, texto) {
+  const item = document.createElement('li');
+  item.className = 'follow-message';
+  item.textContent = texto;
+  alvo.replaceChildren(item);
+}
+
+function criarLinha(texto, classe = 'situation-detail') {
+  const linha = document.createElement('p');
+  linha.className = classe;
+  linha.textContent = texto;
+  return linha;
+}
+
+function descreverSituacao(doacao) {
+  if (doacao.status === 'aceita') return `Aceita por ${doacao.ong}`;
+  return 'Disponível';
+}
+
+function criarCartaoDoDoador(doacao) {
+  const item = document.createElement('li');
+  item.className = 'donation-card';
+  const principal = criarResumo(doacao);
+  principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
+  item.append(principal);
+  return item;
+}
+
+async function carregarMinhas() {
+  if (!doadorConsultado) return;
+  try {
+    const resposta = await fetch(`/api/minhas-doacoes?doador=${encodeURIComponent(doadorConsultado)}`);
+    const doacoes = await lerResposta(resposta);
+    if (doacoes.length) listaMinhas.replaceChildren(...doacoes.map(criarCartaoDoDoador));
+    else mensagemNaLista(listaMinhas, 'Nenhuma doação publicada com esse nome.');
+  } catch (erro) {
+    mensagemNaLista(listaMinhas, erro.message);
+  }
 }
 
 async function carregar() {
@@ -227,6 +274,7 @@ async function aceitarDoacao(doacao, botao) {
     await lerResposta(resposta);
     mostrarToast(`Doação de ${doacao.tipo} reservada para ${ong}.`);
     await carregar();
+    await carregarMinhas();
   } catch (erro) {
     mostrarToast(erro.message, 'error');
     botao.disabled = false;
@@ -267,9 +315,11 @@ form.addEventListener('submit', async (evento) => {
     form.reset();
     lembrar('doador', doacao.doador);
     doadorInput.value = doacao.doador;
+    consultaDoador.value = doacao.doador;
     document.getElementById('validade').min = new Date().toISOString().slice(0, 10);
     mostrarToast('Doação publicada e disponível para as organizações.');
     await carregar();
+    await carregarMinhas();
   } catch (erro) {
     mostrarToast(erro.message, 'error');
   } finally {
@@ -279,6 +329,17 @@ form.addEventListener('submit', async (evento) => {
 });
 
 nomeOng.addEventListener('input', () => validarOng(false));
+
+document.getElementById('form-minhas').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  if (!validarObrigatorio(consultaDoador, 'campo-consulta-doador', 'erro-consulta-doador', 'Informe o nome do doador.')) {
+    consultaDoador.focus();
+    return;
+  }
+  doadorConsultado = consultaDoador.value.trim();
+  lembrar('doador', doadorConsultado);
+  await carregarMinhas();
+});
 doadorInput.addEventListener('input', validarDoador);
 tipoInput.addEventListener('input', validarTipo);
 quantidadeInput.addEventListener('input', validarQuantidade);
@@ -286,4 +347,5 @@ validadeInput.addEventListener('change', validarValidade);
 
 validadeInput.min = new Date().toISOString().slice(0, 10);
 doadorInput.value = lembrado('doador');
+consultaDoador.value = lembrado('doador');
 carregar();
