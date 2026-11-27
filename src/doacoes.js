@@ -76,7 +76,10 @@ function exigirId(id) {
 async function buscarParaTransicao(id, transicao) {
   const doacao = await repo.buscarPorId(id);
   if (!doacao) throw new Error('doação não encontrada');
-  if (doacao.status !== transicao.de) throw new Error(transicao.recusas[doacao.status]);
+  if (doacao.status !== transicao.de) {
+    throw new Error(Object.hasOwn(transicao.recusas, doacao.status)
+      ? transicao.recusas[doacao.status] : 'estado da doação inválido');
+  }
   return doacao;
 }
 
@@ -121,12 +124,16 @@ export async function aceitar(id, ong) {
 }
 
 // H2 — "o voluntário confirma a coleta".
-export async function confirmarColeta(id, voluntario, agora = new Date()) {
+export async function confirmarColeta(id, { voluntario, versaoAceite } = {}, agora = new Date()) {
   const idNumerico = exigirId(id);
   const nome = exigirTexto(voluntario, 'voluntario');
-  await buscarParaTransicao(idNumerico, TRANSICOES.confirmarColeta);
+  const doacao = await buscarParaTransicao(idNumerico, TRANSICOES.confirmarColeta);
+  if (!Number.isInteger(versaoAceite) || versaoAceite < 0) {
+    throw new Error('identifique o aceite atual para confirmar a coleta');
+  }
+  if (doacao.versao_aceite !== versaoAceite) throw new Error('o aceite mudou; atualize a página');
 
-  const coletada = await repo.confirmarColeta(idNumerico, nome, agora);
+  const coletada = await repo.confirmarColeta(idNumerico, nome, agora, versaoAceite);
   if (!coletada) throw new Error('a doação mudou de situação; atualize a página');
   return coletada;
 }
@@ -146,4 +153,22 @@ export async function devolver(id, { ong, motivo } = {}) {
   const devolvida = await repo.devolver(idNumerico, doacao.ong, texto);
   if (!devolvida) throw new Error('a doação mudou de situação; atualize a página');
   return devolvida;
+}
+
+// H4 — "a Marta vê o resultado do mês". O mês é o da publicação.
+export async function resultadoDoMes(mes) {
+  if (typeof mes !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
+    throw new Error('mes deve estar no formato AAAA-MM');
+  }
+
+  const { publicadas, aceitas, coletadas, tempo_medio_horas: horas } = await repo.resultadoDoMes(`${mes}-01`);
+
+  return {
+    mes,
+    publicadas,
+    aceitas,
+    coletadas,
+    tempoMedioHoras: horas,
+    tempoMedio: horas === null ? 'sem coletas no mês' : `${horas.toLocaleString('pt-BR')} h`
+  };
 }

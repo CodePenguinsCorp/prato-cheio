@@ -11,6 +11,9 @@ let doadorConsultado = '';
 const consultaOng = document.getElementById('consulta-ong');
 const listaOng = document.getElementById('lista-ong');
 let ongConsultada = '';
+const mesInput = document.getElementById('mes');
+const painelResultado = document.getElementById('resultado');
+let mesConsultado = '';
 const nomeOng = document.getElementById('nome-ong');
 const totalDisponiveis = document.getElementById('total-disponiveis');
 const impactoTexto = document.getElementById('impacto-texto');
@@ -231,7 +234,7 @@ function criarCartaoDoDoador(doacao) {
   item.className = 'donation-card';
   const principal = criarResumo(doacao);
   principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
-  if (doacao.status === 'disponivel' && doacao.motivo_devolucao) {
+  if (doacao.motivo_devolucao) {
     principal.append(criarLinha(`Devolvida por uma organização. Motivo: ${doacao.motivo_devolucao}`));
   }
   if (doacao.status === 'coletada') {
@@ -304,6 +307,7 @@ async function atualizarPaineis() {
   await carregar();
   await carregarDaOng();
   await carregarMinhas();
+  await carregarResultado();
 }
 
 function criarCartaoDaOng(doacao) {
@@ -325,7 +329,7 @@ function criarCartaoDaOng(doacao) {
     dica: 'Ex.: Rui',
     botao: 'Confirmar coleta',
     enviar: async (voluntario) => {
-      await enviarJson(`/api/doacoes/${doacao.id}/coletar`, { voluntario });
+      await enviarJson(`/api/doacoes/${doacao.id}/coletar`, { voluntario, versaoAceite: doacao.versao_aceite });
       mostrarToast(`Coleta de ${doacao.tipo} confirmada.`);
       await atualizarPaineis();
     }
@@ -353,6 +357,22 @@ async function carregarDaOng() {
     else mensagemNaLista(listaOng, 'Essa organização ainda não aceitou doações.');
   } catch (erro) {
     mensagemNaLista(listaOng, erro.message);
+  }
+}
+
+async function carregarResultado() {
+  if (!mesConsultado) return;
+  try {
+    const resposta = await fetch(`/api/resultado?mes=${encodeURIComponent(mesConsultado)}`);
+    const resultado = await lerResposta(resposta);
+    for (const campo of ['publicadas', 'aceitas', 'coletadas']) {
+      document.getElementById(`resultado-${campo}`).textContent = resultado[campo];
+    }
+    document.getElementById('resultado-tempo').textContent = resultado.tempoMedio;
+    painelResultado.hidden = false;
+  } catch (erro) {
+    painelResultado.hidden = true;
+    mostrarToast(erro.message, 'error');
   }
 }
 
@@ -437,8 +457,7 @@ form.addEventListener('submit', async (evento) => {
     consultaDoador.value = doacao.doador;
     document.getElementById('validade').min = new Date().toISOString().slice(0, 10);
     mostrarToast('Doação publicada e disponível para as organizações.');
-    await carregar();
-    await carregarMinhas();
+    await atualizarPaineis();
   } catch (erro) {
     mostrarToast(erro.message, 'error');
   } finally {
@@ -459,6 +478,16 @@ document.getElementById('form-ong').addEventListener('submit', async (evento) =>
   await carregarDaOng();
 });
 
+document.getElementById('form-resultado').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  if (!validarObrigatorio(mesInput, 'campo-mes', 'erro-mes', 'Escolha o mês.')) {
+    mesInput.focus();
+    return;
+  }
+  mesConsultado = mesInput.value.trim();
+  await carregarResultado();
+});
+
 document.getElementById('form-minhas').addEventListener('submit', async (evento) => {
   evento.preventDefault();
   if (!validarObrigatorio(consultaDoador, 'campo-consulta-doador', 'erro-consulta-doador', 'Informe o nome do doador.')) {
@@ -477,4 +506,7 @@ validadeInput.addEventListener('change', validarValidade);
 validadeInput.min = new Date().toISOString().slice(0, 10);
 doadorInput.value = lembrado('doador');
 consultaDoador.value = lembrado('doador');
+// Mês atual no fuso do aparelho.
+const hoje = new Date();
+mesInput.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
 carregar();
