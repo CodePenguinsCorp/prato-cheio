@@ -147,3 +147,21 @@ export async function devolver(id, { ong, motivo } = {}) {
   if (!devolvida) throw new Error('a doação mudou de situação; atualize a página');
   return devolvida;
 }
+
+// H4 — "a Marta vê o resultado do mês". O mês é o da publicação.
+export async function resultadoDoMes(mes) {
+  if (typeof mes !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
+    throw new Error('mes deve estar no formato AAAA-MM');
+  }
+
+  const { publicadas, aceitas, coletadas, tempo_medio_horas: horas } = await repo.resultadoDoMes(`${mes}-01`);
+
+  return {
+    mes,
+    publicadas,
+    aceitas,
+    coletadas,
+    tempoMedioHoras: horas,
+    tempoMedio: horas === null ? 'sem coletas no mês' : `${horas.toLocaleString('pt-BR')} h`
+  };
+}

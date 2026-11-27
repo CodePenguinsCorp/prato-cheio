@@ -96,3 +96,21 @@ export async function devolver(id, ong, motivo) {
   );
   return rows[0];
 }
+
+// Resultado das doações publicadas no mês (fuso de São Paulo). Os tipos são
+// convertidos aqui: sem ::int, COUNT chega ao JavaScript como texto; sem
+// ::float8, a média arredondada (NUMERIC) também. Sem coletas, a média é NULL.
+export async function resultadoDoMes(primeiroDia) {
+  const { rows } = await query(
+    `SELECT COUNT(*)::int AS publicadas,
+            COUNT(*) FILTER (WHERE status IN ('aceita', 'coletada'))::int AS aceitas,
+            COUNT(*) FILTER (WHERE status = 'coletada')::int AS coletadas,
+            ROUND(AVG(EXTRACT(EPOCH FROM (coletada_em - criada_em)))
+                    FILTER (WHERE status = 'coletada') / 3600, 1)::float8 AS tempo_medio_horas
+       FROM doacoes
+      WHERE criada_em >= ($1::date)::timestamp AT TIME ZONE 'America/Sao_Paulo'
+        AND criada_em < ($1::date + INTERVAL '1 month') AT TIME ZONE 'America/Sao_Paulo'`,
+    [primeiroDia]
+  );
+  return rows[0];
+}
