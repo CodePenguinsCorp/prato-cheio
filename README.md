@@ -65,6 +65,17 @@ docs/retrospectivas/ retrospectiva de cada iteração
 
 ## Como trabalhar (fluxo de Pull Request)
 
+## Definição de pronto
+
+- [ ] CI verde no commit atual do PR — onde se confere: aba Checks.
+- [ ] Aprovação de outro integrante, diferente do autor — onde se confere: aba Reviews e conversas resolvidas.
+- [ ] Critério de aceite e caso de erro exercitados pela API — onde se confere: testes em `tests/` e saída de `npm test`.
+- [ ] Funcionalidade utilizável em 360 px, com resultado e erro compreensíveis — onde se confere: navegador e roteiro em `docs/demo.md`.
+- [ ] Decisões, limitações e uso de IA explícitos — onde se confere: descrição do PR e documentos associados.
+- [ ] Branch atualizada antes da integração e CI da main verde depois — onde se confere: comparação do PR e Actions da main.
+
+### Fluxo
+
 A partir da Unidade 2, **nada entra direto na `main`**:
 
 ```bash

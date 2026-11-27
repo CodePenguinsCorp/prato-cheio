@@ -39,11 +39,12 @@ function exigirDataIso(valor, campo) {
 
 // História zero — "um doador publica uma doação".
 // Critério: tipo, quantidade e validade são obrigatórios.
-export async function criarDoacao({ tipo, quantidade, validade } = {}) {
+export async function criarDoacao({ tipo, quantidade, validade, doador } = {}) {
   return repo.inserir({
     tipo: exigirTexto(tipo, 'tipo'),
     quantidade: exigirTexto(quantidade, 'quantidade'),
-    validade: exigirDataIso(validade, 'validade')
+    validade: exigirDataIso(validade, 'validade'),
+    doador
   });
 }
 

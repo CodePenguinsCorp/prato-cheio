@@ -55,6 +55,8 @@ export async function migrar() {
       criada_em   TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+  // Migração aditiva: ofertas antigas não recebem um doador fictício.
+  await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS doador TEXT');
 }
 
 /** Apaga os dados apenas do banco descartável usado pelos testes. */
