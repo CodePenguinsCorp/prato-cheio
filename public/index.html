@@ -51,6 +51,11 @@
         </div>
 
         <form id="form-doacao" novalidate>
+          <div class="field" id="campo-doador">
+            <label for="doador">Seu nome ou do estabelecimento</label>
+            <input id="doador" name="doador" type="text" placeholder="Ex.: Padaria Pão Bom" autocomplete="organization" aria-describedby="erro-doador" required>
+            <p class="field-error" id="erro-doador">Informe quem está doando.</p>
+          </div>
           <div class="field" id="campo-tipo">
             <label for="tipo">Tipo de alimento</label>
             <input id="tipo" name="tipo" type="text" placeholder="Ex.: frutas, pães ou marmitas" autocomplete="off" aria-describedby="erro-tipo" required>
@@ -98,6 +103,25 @@
           <li class="loading-state"><span class="spinner" aria-hidden="true"></span>Carregando doações...</li>
         </ul>
       </article>
+    </section>
+
+    <section class="panel follow-panel" id="minhas-doacoes" aria-labelledby="titulo-minhas">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">Para doadores</p>
+          <h2 id="titulo-minhas">Minhas doações</h2>
+          <p>Veja o que você publicou e a situação de cada doação.</p>
+        </div>
+      </div>
+      <form class="query-form" id="form-minhas" novalidate>
+        <div class="field" id="campo-consulta-doador">
+          <label for="consulta-doador">Nome usado nas publicações</label>
+          <input id="consulta-doador" type="text" placeholder="Ex.: Padaria Pão Bom" autocomplete="organization" aria-describedby="erro-consulta-doador">
+          <p class="field-error" id="erro-consulta-doador">Informe o nome do doador.</p>
+        </div>
+        <button class="button button-accept" type="submit">Ver minhas doações</button>
+      </form>
+      <ul class="follow-list" id="lista-minhas" aria-live="polite"></ul>
     </section>
   </main>
 

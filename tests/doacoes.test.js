@@ -48,7 +48,7 @@ describe('publicar e listar doações', () => {
   it('CA-01: mostra a doação publicada na lista de disponíveis', async () => {
     const publicada = await request(app)
       .post('/api/doacoes')
-      .send({ tipo: 'Sopa', quantidade: '10 porções', validade: '2026-09-08' });
+      .send({ tipo: 'Sopa', quantidade: '10 porções', validade: '2026-09-08', doador: 'Padaria Pão Bom' });
 
     expect(publicada.status).toBe(201);
 
@@ -69,7 +69,7 @@ describe('publicar e listar doações', () => {
     ['quantidade', { tipo: 'Sopa', validade: '2026-09-08' }],
     ['validade', { tipo: 'Sopa', quantidade: '10 porções' }]
   ])('CA-02: recusa doação sem o campo obrigatório %s', async (campo, doacao) => {
-    const resposta = await request(app).post('/api/doacoes').send(doacao);
+    const resposta = await request(app).post('/api/doacoes').send({ ...doacao, doador: 'Padaria Pão Bom' });
 
     expect(resposta.status).toBe(400);
     expect(resposta.body.erro).toBe(`${campo} é obrigatório`);
@@ -84,7 +84,7 @@ describe('publicar e listar doações', () => {
   ])('EX-01: recusa validade inválida %s', async (validade, mensagem) => {
     const resposta = await request(app)
       .post('/api/doacoes')
-      .send({ tipo: 'Frutas', quantidade: '6 caixas', validade });
+      .send({ tipo: 'Frutas', quantidade: '6 caixas', validade, doador: 'Padaria Pão Bom' });
 
     expect(resposta.status).toBe(400);
     expect(resposta.body.erro).toBe(mensagem);
@@ -95,7 +95,7 @@ describe('aceitar uma doação', () => {
   async function publicar() {
     const resposta = await request(app)
       .post('/api/doacoes')
-      .send({ tipo: 'Pães', quantidade: '20 unidades', validade: '2026-09-08' });
+      .send({ tipo: 'Pães', quantidade: '20 unidades', validade: '2026-09-08', doador: 'Padaria Pão Bom' });
 
     expect(resposta.status).toBe(201);
     return resposta.body;
