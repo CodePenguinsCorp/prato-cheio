@@ -550,6 +550,9 @@ input[aria-invalid="true"] {
 }
 
 .card-action .field { margin: 0; }
+.card-actions { display: grid; gap: 14px; }
+.card-actions .card-action + .card-action { padding-top: 14px; border-top: 1px dashed var(--line); }
+.card-actions .card-action + .card-action .button { background: var(--paper); color: var(--forest-950); border: 1px solid var(--forest-700); box-shadow: none; }
 .follow-message { color: var(--muted); font-size: .86rem; }
 
 .situation {

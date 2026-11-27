@@ -231,6 +231,9 @@ function criarCartaoDoDoador(doacao) {
   item.className = 'donation-card';
   const principal = criarResumo(doacao);
   principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
+  if (doacao.status === 'disponivel' && doacao.motivo_devolucao) {
+    principal.append(criarLinha(`Devolvida por uma organização. Motivo: ${doacao.motivo_devolucao}`));
+  }
   if (doacao.status === 'coletada') {
     principal.append(criarLinha(`Coletada por ${doacao.voluntario} em ${formatarHorario(doacao.coletada_em)}.`));
   }
@@ -314,7 +317,9 @@ function criarCartaoDaOng(doacao) {
     principal.append(criarLinha(`Coletada por ${doacao.voluntario} em ${formatarHorario(doacao.coletada_em)}.`));
     return item;
   }
-  item.append(criarAcao({
+  const acoes = document.createElement('div');
+  acoes.className = 'card-actions';
+  acoes.append(criarAcao({
     id: `voluntario-${doacao.id}`,
     rotulo: 'Nome de quem coletou',
     dica: 'Ex.: Rui',
@@ -324,7 +329,18 @@ function criarCartaoDaOng(doacao) {
       mostrarToast(`Coleta de ${doacao.tipo} confirmada.`);
       await atualizarPaineis();
     }
+  }), criarAcao({
+    id: `motivo-${doacao.id}`,
+    rotulo: 'Não vai conseguir buscar? Diga o motivo',
+    dica: 'Ex.: sem voluntário hoje',
+    botao: 'Devolver doação',
+    enviar: async (motivo) => {
+      await enviarJson(`/api/doacoes/${doacao.id}/devolver`, { ong: ongConsultada, motivo });
+      mostrarToast(`Doação de ${doacao.tipo} devolvida. Ela voltou para a lista.`);
+      await atualizarPaineis();
+    }
   }));
+  item.append(acoes);
   return item;
 }
 
