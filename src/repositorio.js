@@ -52,3 +52,18 @@ export async function aceitar(id, ong) {
   );
   return rows[0];
 }
+
+export async function listarDaOng(ong) {
+  const { rows } = await query(
+    'SELECT * FROM doacoes WHERE ong = $1 ORDER BY criada_em ASC, id ASC', [ong]
+  );
+  return rows;
+}
+
+export async function coletar(id, voluntario) {
+  const { rows } = await query(
+    `UPDATE doacoes SET status = 'coletada', voluntario = $1, coletada_em = clock_timestamp()
+     WHERE id = $2 AND status = 'aceita' RETURNING *`, [voluntario, id]
+  );
+  return rows[0];
+}

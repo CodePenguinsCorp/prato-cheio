@@ -269,7 +269,7 @@ validadeInput.addEventListener('change', validarValidade);
 validadeInput.min = new Date().toISOString().slice(0, 10);
 carregar();
 
-function renderizarAcompanhamento(destino, doacoes) {
+function renderizarAcompanhamento(destino, doacoes, acoes = false) {
   const itens = doacoes.map(doacao => {
     const item = document.createElement('li');
     item.className = 'donation-card';
@@ -279,7 +279,31 @@ function renderizarAcompanhamento(destino, doacoes) {
     const detalhes = document.createElement('p');
     detalhes.textContent = `${doacao.quantidade} • ${doacao.status === 'disponivel' ? 'Disponível' : doacao.status === 'coletada' ? 'Coletada' : 'Aceita'}${doacao.ong ? ` por ${doacao.ong}` : ''}`;
     conteudo.append(titulo, detalhes);
+    if (doacao.coletada_em) {
+      const coleta = document.createElement('p');
+      coleta.textContent = `Coleta: ${doacao.voluntario}, ${new Date(doacao.coletada_em).toLocaleString('pt-BR')}`;
+      conteudo.append(coleta);
+    }
     item.append(conteudo);
+    if (acoes && doacao.status === 'aceita') {
+      const coletar = document.createElement('button');
+      coletar.className = 'button button-accept';
+      coletar.type = 'button';
+      coletar.textContent = 'Confirmar coleta';
+      coletar.addEventListener('click', async () => {
+        coletar.disabled = true;
+        try {
+          await lerResposta(await fetch(`/api/doacoes/${doacao.id}/coletar`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ voluntario: document.getElementById('voluntario').value.trim() })
+          }));
+          mostrarToast('Coleta confirmada.');
+          await carregarReservas();
+        } catch (erro) { mostrarToast(erro.message, 'error'); }
+        finally { coletar.disabled = false; }
+      });
+      item.append(coletar);
+    }
     return item;
   });
   if (!itens.length) {
@@ -305,4 +329,22 @@ document.getElementById('form-minhas').addEventListener('submit', async evento =
   } finally {
     destino.setAttribute('aria-busy', 'false');
   }
+});
+
+async function carregarReservas() {
+  const destino = document.getElementById('reservas');
+  destino.setAttribute('aria-busy', 'true');
+  try {
+    const nome = document.getElementById('consulta-ong').value.trim();
+    const doacoes = await lerResposta(await fetch(`/api/doacoes/ong?${new URLSearchParams({ nome })}`));
+    renderizarAcompanhamento(destino, doacoes, true);
+  } catch (erro) {
+    destino.replaceChildren();
+    mostrarToast(erro.message, 'error');
+  } finally { destino.setAttribute('aria-busy', 'false'); }
+}
+
+document.getElementById('form-reservas').addEventListener('submit', evento => {
+  evento.preventDefault();
+  carregarReservas();
 });
