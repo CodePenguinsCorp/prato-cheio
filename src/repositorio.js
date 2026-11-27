@@ -67,3 +67,13 @@ export async function coletar(id, voluntario) {
   );
   return rows[0];
 }
+
+export async function devolver(id, ong, motivo) {
+  const { rows } = await query(
+    `UPDATE doacoes SET status = 'disponivel', ong = NULL, voluntario = NULL,
+       coletada_em = NULL, motivo_devolucao = $1
+     WHERE id = $2 AND status = 'aceita' AND ong = $3 RETURNING *`,
+    [motivo, id, ong]
+  );
+  return rows[0];
+}

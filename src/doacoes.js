@@ -93,3 +93,19 @@ export async function coletar(id, voluntario) {
   if (!coletada) throw new Error('somente doação aceita pode ser coletada');
   return coletada;
 }
+
+export async function devolver(id, ong, motivo) {
+  const idNumerico = Number(id);
+  if (!Number.isInteger(idNumerico) || idNumerico <= 0) {
+    throw new Error('id da doação é inválido');
+  }
+  const nome = exigirTexto(ong, 'ong');
+  const justificativa = exigirTexto(motivo, 'motivo');
+  const doacao = await repo.buscarPorId(idNumerico);
+  if (!doacao) throw new Error('doação não encontrada');
+  if (doacao.status !== 'aceita') throw new Error('somente doação aceita pode ser devolvida');
+  if (doacao.ong !== nome) throw new Error('somente a ONG que aceitou pode devolver');
+  const devolvida = await repo.devolver(idNumerico, nome, justificativa);
+  if (!devolvida) throw new Error('a doação mudou; consulte a situação antes de devolver');
+  return devolvida;
+}
