@@ -54,6 +54,11 @@ export async function listarDisponiveis() {
   return repo.listarDisponiveis();
 }
 
+// H1 — "o doador acompanha as suas doações".
+export async function listarDoDoador(doador) {
+  return repo.listarPorDoador(exigirTexto(doador, 'doador'));
+}
+
 // História zero — "uma ONG aceita uma doação".
 // Regra do caso: uma doação aceita não fica disponível para outra ONG.
 export async function aceitar(id, ong) {

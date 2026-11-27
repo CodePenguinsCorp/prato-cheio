@@ -26,6 +26,19 @@ export async function listarDisponiveis() {
   return rows;
 }
 
+// Compara o nome sem diferenciar maiúsculas. Doações antigas (doador NULL)
+// nunca casam, então não aparecem na consulta de ninguém.
+export async function listarPorDoador(doador) {
+  const { rows } = await query(
+    `SELECT *
+       FROM doacoes
+      WHERE lower(doador) = lower($1)
+      ORDER BY criada_em ASC, id ASC`,
+    [doador]
+  );
+  return rows;
+}
+
 export async function buscarPorId(id) {
   const { rows } = await query(
     'SELECT * FROM doacoes WHERE id = $1',
