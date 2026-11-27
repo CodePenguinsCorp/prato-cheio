@@ -4,6 +4,7 @@ const botaoPublicar = document.getElementById('publicar');
 const tipoInput = document.getElementById('tipo');
 const quantidadeInput = document.getElementById('quantidade');
 const validadeInput = document.getElementById('validade');
+const doadorInput = document.getElementById('doador');
 const nomeOng = document.getElementById('nome-ong');
 const totalDisponiveis = document.getElementById('total-disponiveis');
 const impactoTexto = document.getElementById('impacto-texto');
@@ -35,6 +36,24 @@ function validarObrigatorio(input, campoId, erroId, mensagem) {
   const invalido = input.value.trim() === '';
   definirErro(input, campoId, erroId, invalido ? mensagem : '');
   return !invalido;
+}
+
+// Sem login: o navegador só lembra o último nome digitado, por conveniência.
+function lembrar(chave, valor) {
+  try { localStorage.setItem(chave, valor); } catch { /* Armazenamento indisponível. */ }
+}
+
+function lembrado(chave) {
+  try { return localStorage.getItem(chave) ?? ''; } catch { return ''; }
+}
+
+function validarDoador() {
+  return validarObrigatorio(
+    doadorInput,
+    'campo-doador',
+    'erro-doador',
+    'Informe quem está doando.'
+  );
 }
 
 function validarTipo() {
@@ -219,6 +238,7 @@ async function aceitarDoacao(doacao, botao) {
 form.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const validacoes = [
+    [validarDoador(), doadorInput],
     [validarTipo(), tipoInput],
     [validarQuantidade(), quantidadeInput],
     [validarValidade(), validadeInput]
@@ -230,6 +250,7 @@ form.addEventListener('submit', async (evento) => {
   }
   const dados = new FormData(form);
   const doacao = {
+    doador: dados.get('doador').trim(),
     tipo: dados.get('tipo').trim(),
     quantidade: dados.get('quantidade').trim(),
     validade: dados.get('validade')
@@ -244,6 +265,8 @@ form.addEventListener('submit', async (evento) => {
     });
     await lerResposta(resposta);
     form.reset();
+    lembrar('doador', doacao.doador);
+    doadorInput.value = doacao.doador;
     document.getElementById('validade').min = new Date().toISOString().slice(0, 10);
     mostrarToast('Doação publicada e disponível para as organizações.');
     await carregar();
@@ -256,9 +279,11 @@ form.addEventListener('submit', async (evento) => {
 });
 
 nomeOng.addEventListener('input', () => validarOng(false));
+doadorInput.addEventListener('input', validarDoador);
 tipoInput.addEventListener('input', validarTipo);
 quantidadeInput.addEventListener('input', validarQuantidade);
 validadeInput.addEventListener('change', validarValidade);
 
 validadeInput.min = new Date().toISOString().slice(0, 10);
+doadorInput.value = lembrado('doador');
 carregar();

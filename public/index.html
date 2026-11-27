@@ -51,6 +51,11 @@
         </div>
 
         <form id="form-doacao" novalidate>
+          <div class="field" id="campo-doador">
+            <label for="doador">Seu nome ou do estabelecimento</label>
+            <input id="doador" name="doador" type="text" placeholder="Ex.: Padaria Pão Bom" autocomplete="organization" aria-describedby="erro-doador" required>
+            <p class="field-error" id="erro-doador">Informe quem está doando.</p>
+          </div>
           <div class="field" id="campo-tipo">
             <label for="tipo">Tipo de alimento</label>
             <input id="tipo" name="tipo" type="text" placeholder="Ex.: frutas, pães ou marmitas" autocomplete="off" aria-describedby="erro-tipo" required>
