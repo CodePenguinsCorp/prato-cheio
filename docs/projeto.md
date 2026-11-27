@@ -19,8 +19,16 @@
 | D3 | Como tratar uma doação aceita que não foi retirada? | Registrar manualmente a ocorrência e manter a doação fora da lista até decisão da Marta, sem reoferta automática. | Expirar a reserva após um prazo configurado e recolocar a doação automaticamente na lista. | **A, provisoriamente**, até o piloto fornecer prazo seguro e autorização operacional; a decisão deve ser revista com Marta e as ONGs. | **RN-04, RN-05** e risco “doação ser aceita e não retirada no prazo” (probabilidade e impacto altos). |
 | D4 | Quando migrar para PostgreSQL? | Migrar nesta unidade, antecipando adaptação de SQL, schema, testes e CI. | Manter SQLite agora e migrar na Unidade 3. | **B**, por conservar a instalação só com Node e cumprir o cronograma; manter SQLite também na Unidade 3 descumpriria a entrega. | História zero, baixo custo do piloto, restrição de migração no README e RN-02/RN-03. |
 | D5 | Como impedir que os testes apaguem dados do piloto? | Definir somente `DATABASE_FILE=:memory:` na configuração. | Forçar memória no Vitest e recusar `limparBanco()` em arquivo. | **B**, com duas barreiras independentes da configuração local; persistência entre processos e isolamento em PostgreSQL exigirão validação futura. | CA-01 a CA-05 e risco de perda de dados reais apresentado no incremento. |
+| D6 | Quais são os estados da doação e o que acontece fora das transições? (contrato de H1 a H4) | Três estados (`disponivel`, `aceita`, `coletada`) e três transições: aceitar (`disponivel` → `aceita`), confirmar coleta (`aceita` → `coletada`) e devolver (`aceita` → `disponivel`). Qualquer outra é recusada com HTTP 400 e mensagem, sem alterar a doação. | Criar também o estado `devolvida`. | **A (proposta, a confirmar pelo grupo):** a devolvida volta inteira para a lista sem criar um quarto estado. | CA-05, RN-02/RN-03 e H1 a H4. |
+| D7 | H1: o que fazer com as doações publicadas sem doador? | Deixar `doador` vazio: continuam disponíveis e não aparecem em consulta de doador. | Atribuir um doador padrão. | **A (proposta):** não inventa autoria. No piloto elas seriam de alguém; a atribuição teria de ser feita com a Marta. | H1; preservação dos dados. |
+| D8 | H1: como o doador se identifica sem login? | Nome digitado, lembrado no navegador e comparado sem diferenciar maiúsculas e espaços nas pontas. | Código secreto por doador. | **A (proposta):** é a mais simples; a falta de proteção vai para as limitações. | H1; risco de cadastro demorado. |
+| D9 | H2: o que acontece na segunda confirmação, e o nome do voluntário é obrigatório? | Recusar e manter o primeiro registro. Nome obrigatório; guarda-se só o nome, visto nas consultas do doador e da ONG. | Ignorar em silêncio e aceitar coleta sem nome. | **A (proposta):** deixa o erro visível e a coleta rastreável com um único dado pessoal. | H2; rastreabilidade. |
+| D10 | H3: o motivo é obrigatório, onde fica e quem o vê? | Obrigatório, na coluna `motivo_devolucao` (só o da última devolução), visto na consulta do doador; não entra na lista, na consulta da ONG nem no resultado. | Tabela de histórico de devoluções, visível também à Marta. | **A (proposta):** atende o CA1 sem tabela nova e sem guardar qual ONG devolveu. | H3; D3 (não há devolução automática: é ação da ONG). |
+| D11 | H3: a ONG que devolveu pode aceitar de novo? | Sim. | Bloquear aquela ONG para aquela doação. | **A (proposta):** a devolução não é punição, e bloquear exigiria guardar quem devolveu. | H3. |
+| D12 | H4: em que mês a doação conta, e as devolvidas entram? | Mês da **publicação**, no fuso `America/Sao_Paulo`; a devolvida conta como publicada e só conta como aceita se estiver aceita ou coletada. | Mês da coleta. | **A (proposta):** publicadas, aceitas e coletadas descrevem o mesmo conjunto. O número de um mês pode mudar depois que ele termina. | H4 CA3; objetivo de reduzir o tempo até a retirada. |
+| D13 | H4: como apresentar o tempo médio? | Média em horas, com uma casa decimal, contada da publicação original; sem coletas, "sem coletas no mês". | Minutos, ou a mediana prevista na Análise. | **A (proposta):** é o formato do CA1. Coletas de poucos minutos aparecem como 0 h ou 0,1 h. | H4 CA1/CA2. |
 
-As cinco decisões têm registro detalhado nos ADRs listados na seção [ADRs](#adrs).
+As decisões D1 a D5 têm registro detalhado nos ADRs listados na seção [ADRs](#adrs).
 
 ## Tabela de trade-offs (uma decisão em detalhe)
 
@@ -67,6 +75,19 @@ A geração inicial, os três erros de contexto, as fontes, as correções e a c
 | Representação do aceite | `status` e `ong` representam disponível/sem ONG e aceita/com ONG. A transição condicional é feita em `src/repositorio.js`; o schema não tem `CHECK` dos estados. |
 
 Não há identidade do doador, registro de retirada ou horário do aceite no banco nem no modelo. São lacunas de evolução, não divergências. A retirada continua acompanhada em planilha; a decisão provisória D3 não autoriza reoferta automática.
+
+## Histórias do Trabalho 3 e testes
+
+As decisões D6 a D13 são propostas até o grupo confirmá-las. Desde H1 a H3, `doacoes` também tem `doador`, `voluntario`, `coletada_em` e `motivo_devolucao`, todas anuláveis e criadas por `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`. A conferência da seção Diagramas e o diagrama de dados descrevem o modelo da Unidade 2 e ainda precisam ser atualizados.
+
+| História | Testes (`tests/`) | Critérios | Casos limite e decisões |
+|---|---|---|---|
+| H1: o doador acompanha as suas doações | `h1-minhas-doacoes.test.js` | `H1-CA1` a `H1-CA3` | consulta sem nome, doações antigas, maiúsculas, schema com linhas |
+| H2: o voluntário confirma a coleta | `h2-confirmar-coleta.test.js` | `H2-CA1` a `H2-CA3` | segunda confirmação, simultâneas, sem voluntário, doação inexistente, consulta da ONG |
+| H3: a ONG devolve uma doação aceita | `h3-devolver.test.js` | `H3-CA1` a `H3-CA3` | sem motivo, sem ONG, devolver duas vezes, aceitar de novo, maiúsculas |
+| H4: a Marta vê o resultado do mês | `h4-resultado-do-mes.test.js` | `H4-CA1` a `H4-CA3` | virada do mês no fuso, arredondamento, devolvida, mês inválido |
+
+Datas: `criarApp({ relogio })` recebe o relógio. H2 e H4 fixam os instantes e preparam o estado pela API, então o resultado não depende do dia da execução. Tipos: `COUNT` e a média são convertidos no SQL (`::int` e `::float8`).
 
 ## ADRs
 
