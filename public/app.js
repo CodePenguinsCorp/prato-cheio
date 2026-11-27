@@ -214,7 +214,13 @@ function criarLinha(texto, classe = 'situation-detail') {
 
 function descreverSituacao(doacao) {
   if (doacao.status === 'aceita') return `Aceita por ${doacao.ong}`;
+  if (doacao.status === 'coletada') return `Coletada para ${doacao.ong}`;
   return 'Disponível';
+}
+
+function formatarHorario(instante) {
+  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+    .format(new Date(instante));
 }
 
 function criarCartaoDoDoador(doacao) {
@@ -222,6 +228,9 @@ function criarCartaoDoDoador(doacao) {
   item.className = 'donation-card';
   const principal = criarResumo(doacao);
   principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
+  if (doacao.status === 'coletada') {
+    principal.append(criarLinha(`Coletada por ${doacao.voluntario} em ${formatarHorario(doacao.coletada_em)}.`));
+  }
   item.append(principal);
   return item;
 }

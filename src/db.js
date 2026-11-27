@@ -59,6 +59,8 @@ export async function migrar() {
   // Colunas acrescentadas depois da migração para PostgreSQL. A tabela já tem
   // linhas: todas são anuláveis e nada é apagado nem preenchido por suposição.
   await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS doador TEXT');
+  await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS voluntario TEXT');
+  await conexao().query('ALTER TABLE doacoes ADD COLUMN IF NOT EXISTS coletada_em TIMESTAMPTZ');
 }
 
 /** Apaga os dados apenas do banco descartável usado pelos testes. */
