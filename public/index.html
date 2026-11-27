@@ -142,6 +142,30 @@
       </form>
       <ul class="follow-list" id="lista-minhas" aria-live="polite"></ul>
     </section>
+
+    <section class="panel follow-panel" id="resultado-do-mes" aria-labelledby="titulo-resultado">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">Para a coordenação</p>
+          <h2 id="titulo-resultado">Resultado do mês</h2>
+          <p>Considera as doações publicadas no mês, mesmo que coletadas depois.</p>
+        </div>
+      </div>
+      <form class="query-form" id="form-resultado" novalidate>
+        <div class="field" id="campo-mes">
+          <label for="mes">Mês</label>
+          <input id="mes" type="month" placeholder="AAAA-MM" aria-describedby="erro-mes">
+          <p class="field-error" id="erro-mes">Escolha o mês.</p>
+        </div>
+        <button class="button button-accept" type="submit">Ver resultado</button>
+      </form>
+      <dl class="result-grid" id="resultado" aria-live="polite" hidden>
+        <div><dt>Publicadas</dt><dd id="resultado-publicadas"></dd></div>
+        <div><dt>Aceitas</dt><dd id="resultado-aceitas"></dd></div>
+        <div><dt>Coletadas</dt><dd id="resultado-coletadas"></dd></div>
+        <div><dt>Tempo médio até a coleta</dt><dd id="resultado-tempo"></dd></div>
+      </dl>
+    </section>
   </main>
 
   <div class="toast-region" id="toast-region" aria-live="assertive"></div>
