@@ -6,10 +6,10 @@
 
 Requisitos: Node.js 22.13 ou superior e Docker (ou outro PostgreSQL acessível por `DATABASE_URL`). Os comandos abaixo usam Bash; a configuração equivalente para PowerShell está logo depois.
 
-A partir de um clone novo da branch deste PR:
+A partir de um clone novo da branch de entrega:
 
 ```bash
-git clone --branch docs/entrega-aula-13 https://github.com/CodePenguinsCorp/prato-cheio.git
+git clone --branch entrega-3 https://github.com/CodePenguinsCorp/prato-cheio.git
 cd prato-cheio
 docker run -d --name pratocheio-pg -e POSTGRES_USER=pratocheio -e POSTGRES_PASSWORD=pratocheio -e POSTGRES_DB=pratocheio -p 5432:5432 postgres:16-alpine
 docker exec pratocheio-pg pg_isready -U pratocheio -d pratocheio
@@ -40,39 +40,54 @@ $env:TEST_DATABASE_URL = 'postgres://pratocheio:pratocheio@localhost:5432/pratoc
 - **Resultado esperado:** `npm run db:migrar` imprime `schema criado`; `npm start` sobe em <http://localhost:3000>.
 - **Testes:** em outro terminal, defina `TEST_DATABASE_URL` com a URL acima e execute `npm test`. A suíte apaga somente o conteúdo do banco de testes configurado; não use a URL da demo nem a do piloto.
 - **Estado inicial:** use um banco novo e vazio para reproduzir a lista e os contadores abaixo. Um banco reutilizado conserva as doações anteriores.
+- **No celular:** conecte-o à mesma rede do computador e abra `http://IP-DO-COMPUTADOR:3000` (o firewall precisa permitir). Sem isso, use o modo de dispositivo do navegador com 360 px de largura e registre que não foi um celular real.
 
 ## Roteiro (3 minutos)
 
-| Tempo | O que mostrar | O que se prova |
+| Tempo | O que mostrar | Passos |
 |---|---|---|
-| 0:00–0:20 | **Problema:** doadores e ONGs combinam retirada de alimento por canais dispersos, e comida própria para consumo é descartada antes da coleta. | por que o produto existe |
-| 0:20–1:50 | **História:** o doador publica uma doação (tipo, quantidade, validade), ela aparece na lista, a ONG aceita e ela sai da lista. Banco: PostgreSQL. | o produto executa ponta a ponta |
-| 1:50–2:30 | **Erro tratado:** publicar sem quantidade é recusado; aceitar uma doação já aceita por outra ONG é recusado. | o limite foi pensado (CA-02, CA-05) |
-| 2:30–3:00 | **O que falta:** registrar a retirada, tratar doação aceita e não retirada (ADR 0003, sem reoferta automática), áreas do doador e da ONG, medir tempo até a retirada. | sabemos onde estamos |
+| 0:00–0:20 | **Problema:** doadores e ONGs combinam a retirada por canais dispersos, e comida boa é descartada antes da coleta. | 1 |
+| 0:20–1:50 | **A vida de uma doação:** publicada, aceita e coletada; e uma devolvida. O doador acompanha. | 2 a 9 |
+| 1:50–2:35 | **Resultado do mês e erro tratado:** devolver sem motivo é recusado. | 8 e 10 |
+| 2:35–3:00 | **O que falta:** login, aviso e prazo para doação não retirada, histórico de devoluções e medir retiradas antes da validade. | — |
 
 ## Passo a passo reproduzível
 
-Abra <http://localhost:3000> no navegador.
+Use um banco novo e vazio. Abra o produto no navegador do celular. As seções ficam uma abaixo da outra.
 
-1. **Ação:** abra a página inicial. **Resultado esperado:** aparece o formulário de publicação e a lista de doações disponíveis vazia, com o contador de disponíveis em 0.
-2. **Ação:** no formulário, digite `Pães` em tipo, `20 unidades` em quantidade e escolha uma validade futura (ex.: amanhã). Clique em **Publicar doação**. **Resultado esperado:** aviso verde "Doação publicada e disponível para as organizações." e o cartão "Pães, 20 unidades" aparece na lista, com o contador em 1 (CA-01).
-3. **Ação:** publique uma segunda doação: `Frutas`, `10 porções`, validade futura. **Resultado esperado:** a lista mostra as duas doações.
-4. **Ação (caso de erro 1):** limpe o formulário, preencha só tipo `Arroz` e validade, deixe a quantidade vazia e clique em **Publicar doação**. **Resultado esperado:** a publicação é recusada: o campo quantidade fica marcado com "Informe a quantidade disponível." e nenhuma doação nova entra na lista (CA-02).
-5. **Ação:** no campo do nome da ONG, digite `Cozinha Solidária` e clique em **Aceitar doação** no cartão "Pães". **Resultado esperado:** aviso "Doação de Pães reservada para Cozinha Solidária." e o cartão "Pães" some da lista; resta só "Frutas" e o contador vai a 1 (CA-03, CA-04).
-6. **Ação (caso de erro 2, pela API):** em um terminal Bash, rode (troque `1` pelo id da doação de Pães, que é a primeira criada em banco novo):
+1. **Ação:** abra a página inicial. **Esperado:** formulário de publicação, lista vazia e contador 0.
+2. **Ação:** em **Publique uma doação**, preencha nome `Padaria Pão Bom`, tipo `Pães`, quantidade `20 unidades`, validade amanhã e toque em **Publicar doação**. **Esperado:** aviso "Doação publicada e disponível para as organizações." e o cartão "Pães" na lista; contador 1.
+3. **Ação:** publique `Frutas`, `10 porções`, validade amanhã (o nome continua preenchido). **Esperado:** duas doações; contador 2.
+4. **Ação:** apague o nome do doador, preencha tipo `Arroz`, quantidade `2 kg`, validade amanhã e toque em **Publicar doação**. **Esperado:** "Informe quem está doando."; nada é publicado. Depois, recarregue a página.
+5. **Ação:** em **Doações disponíveis**, digite a organização `Casa Esperança` e toque em **Aceitar doação** em "Pães" e depois em "Frutas". **Esperado:** cada uma some da lista, o contador chega a 0 e as duas aparecem em **Doações da organização** como "Aceita por Casa Esperança".
+6. **Ação:** em **Minhas doações**, digite `Padaria Pão Bom` e toque em **Ver minhas doações**. **Esperado:** só as duas doações da padaria, ambas "Aceita por Casa Esperança".
+7. **Ação:** em **Doações da organização**, no cartão "Pães", digite `Rui` em **Nome de quem coletou** e toque em **Confirmar coleta**. **Esperado:** "Coleta de Pães confirmada."; o cartão mostra "Coletada para Casa Esperança" e "Coletada por Rui em" com data e hora, sem botões.
+8. **Ação:** no cartão "Frutas", deixe o motivo vazio e toque em **Devolver doação**. **Esperado:** aviso "motivo é obrigatório" e nada muda. Depois, digite `sem voluntário hoje` e toque de novo. **Esperado:** "Doação de Frutas devolvida. Ela voltou para a lista."; "Frutas" reaparece nas disponíveis, sem ONG e sem o motivo; contador 1.
+9. **Ação:** confira **Minhas doações** (atualizada sozinha). **Esperado:** "Pães" coletada por Rui; "Frutas" disponível, com "Devolvida por uma organização. Motivo: sem voluntário hoje".
+10. **Ação:** em **Resultado do mês**, mantenha o mês atual e toque em **Ver resultado**. **Esperado:** publicadas 2, aceitas 1, coletadas 1 e tempo médio `0 h` (a coleta foi minutos depois da publicação; se passarem 3 minutos ou mais, aparece `0,1 h`). Escolha um mês sem doações, como janeiro de 2026. **Esperado:** 0, 0, 0 e "sem coletas no mês".
+11. **Ação (regras pela API, em Bash no computador; em banco novo, Pães é a doação 1):**
 
    ```bash
-   curl -i -X POST http://localhost:3000/api/doacoes/1/aceitar -H "Content-Type: application/json" -d '{"ong":"Outra ONG"}'
+   curl -s -X POST http://localhost:3000/api/doacoes/1/devolver -H "Content-Type: application/json" -d '{"ong":"Casa Esperan\u00e7a","motivo":"teste"}'
+   curl -s -X POST http://localhost:3000/api/doacoes/2/coletar -H "Content-Type: application/json" -d '{"voluntario":"Rui"}'
+   curl -s -X POST http://localhost:3000/api/doacoes/1/aceitar -H "Content-Type: application/json" -d '{"ong":"Outra ONG"}'
+   curl -s -X POST http://localhost:3000/api/doacoes/2/aceitar -H "Content-Type: application/json" -d '{"ong":"Casa Esperan\u00e7a"}'
+   curl -s -X POST http://localhost:3000/api/doacoes/2/devolver -H "Content-Type: application/json" -d '{"ong":"Outra ONG","motivo":"teste"}'
    ```
 
-   **Resultado esperado:** `HTTP/1.1 400` e corpo `{"erro":"doação já foi aceita"}`. A doação continua com a Cozinha Solidária (CA-05).
-7. **Ação (opcional, prova da regra):** no mesmo terminal Bash, `curl -i -X POST http://localhost:3000/api/doacoes -H "Content-Type: application/json" -d '{"tipo":"Leite","quantidade":"5 caixas"}'`. **Resultado esperado:** `HTTP/1.1 400` e `{"erro":"validade é obrigatório"}`.
-8. **Ação:** `curl http://localhost:3000/api/saude`. **Resultado esperado:** `{"ok":true}`.
-9. **Ação (provas automatizadas):** `npm test` com `TEST_DATABASE_URL` apontando para um banco **descartável** (os testes apagam as doações). **Resultado esperado:** a suíte passa inteira (15 testes, incluindo CA-01 a CA-05). Atenção: não aponte para o banco da demo.
+   **Esperado, na ordem:** `{"erro":"doação já coletada não pode ser devolvida"}`; `{"erro":"só uma doação aceita pode ter a coleta confirmada"}`; `{"erro":"doação já foi aceita"}`; a doação 2 aceita pela Casa Esperança; `{"erro":"só a ONG que aceitou pode devolver a doação"}`. O `\u00e7` é o "ç" escrito em ASCII, para o terminal não trocar o caractere.
+12. **Ação:** `npm test` com `TEST_DATABASE_URL` apontando para o banco de testes. **Esperado:** 58 testes passando.
 
 ## Testado por
+
+- **Nome:** Matheus Büsemayer
+- **Data:** 26/11/2026
+- **Aparelho e navegador:** navegador do notebook (não foi testado em celular)
+- **O que precisou ser corrigido:** nada precisou mudar
+
+### Registro anterior (roteiro da Aula 13, versão anterior do produto)
 
 - **Responsável pela validação:** André Schultz, com execução assistida pelo Codex em **24/11/2026**, a seu pedido. Esta sessão usou um clone novo do commit `8d6e5fd`, Node.js 22.14.0 e PostgreSQL 18.3 local, com bancos descartáveis separados para demo e testes. A aplicação foi acessada em `http://localhost:3101` (`PORT=3101`).
 - **Resultado observado:** passos 1 a 5 executados pela interface; passos 6 a 8 conferidos pela API; passo 9 com **15 testes passando**. As doações finais e a associação à primeira ONG foram conferidas diretamente no banco. Veja a [evidência da execução](evidencias/validacao-aula-13.md).
 - **Correções do roteiro:** aguardar a prontidão do PostgreSQL, instalar pelo lockfile com `npm ci`, separar o banco dos testes, explicitar as variáveis por terminal e a branch do PR. O fluxo da aplicação não precisou de alteração.
-- **Execução independente:** ainda não realizada por outro integrante sem ajuda. A validação assistida acima não substitui esse requisito da atividade. Após a execução manual, registrar nome, data real e eventuais correções nesta seção.
+- **Execução independente:** em 24/11 ainda não havia sido feita; o registro atual está acima.

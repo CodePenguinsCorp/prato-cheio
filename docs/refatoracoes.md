@@ -17,13 +17,19 @@
   - testes depois da mudança: 15 passando (PostgreSQL 16)
   - link da execução do CI verde: https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/42309691752
 
-## Refatoração 2 — Separar a validação de entrada das regras de negócio
+## Refatoração 2 — Extrair a busca e a checagem de transição
 
-- **Cheiro de código atacado:** responsabilidades misturadas em `src/doacoes.js` — `exigirTexto`, `exigirInicio` e `exigirDataIso` (validação de formato) vivem no mesmo módulo que decide as regras de negócio (aceite único, doação já aceita), e `aceitar()` mistura validação de `id`/`ong` com a regra.
-- **Qual dor concreta isso resolvia:** a próxima mudança de regra de entrada (ex.: validade não pode estar no passado, ou limite de tamanho da quantidade) obriga a mexer no arquivo onde mora o aceite único, e não há como testar as validações isoladas, só pela API. Qualquer erro ali pode afetar a regra mais crítica do sistema (RN-02/RN-03).
-- **O que mudou:** escolhida e registrada hoje; será aplicada, com testes, até o Trabalho 3 — extrair as funções `exigir*` para `src/validacao.js`, sem mudar mensagens de erro nem comportamento.
-- **Evidência (testes verdes antes e depois):** a registrar no PR da refatoração (suíte de 15+ testes verde antes e depois, mais testes unitários de `validacao.js`).
+- **Cheiro:** duplicação (terceira repetição). Com a primeira fatia de H3, `aceitar`, `confirmarColeta` e `devolver` começavam do mesmo jeito: validar o id, buscar a doação, recusar se não existe e conferir se a transição é permitida.
+- **Dor na próxima mudança:** uma regra de estado nova ou alterada exigiria editar três funções, com as transições espalhadas em `if`s; as fatias seguintes de H3 criariam mais código sobre a cópia.
+- **O que mudou:** em `src/doacoes.js`, a tabela `TRANSICOES` (estado de origem e mensagem para cada outro estado, como na D6), `exigirId` e `buscarParaTransicao`. As três operações usam as funções; cada uma mantém sua validação de entrada, e a posse da ONG continua em `devolver`.
+- **O que não mudou:** rotas, SQL, testes e mensagens. A guarda no `UPDATE` de cada transição permanece, para o caso de ações simultâneas.
+- **Evidência:**
+  - no histórico do repositório, a extração entrou junto com a H3, em um único commit; por isso não há execução separada de antes e depois no CI
+  - em um ensaio local com as mudanças separadas (PostgreSQL 16): **33 testes antes** e **33 depois**, sem alterar teste
+  - no mesmo ensaio, os testes percebem a falha: sem a checagem de estado em `buscarParaTransicao`, 4 ficaram vermelhos (`CA-05`, `H2-CA2`, o limite da segunda confirmação e `H3-CA2`) pela mensagem trocada, porque a guarda do SQL ainda impediu a mudança de estado; a linha foi restaurada
+  - [CI verde da `main` com H1 a H4](https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/45928464135), com 58 testes na execução local
+- **Revisão:** [PR 17](https://github.com/CodePenguinsCorp/prato-cheio/pull/17), aprovado por busemayer, sem comentários em linha. Os problemas apontados na revisão foram corrigidos no [PR 18](https://github.com/CodePenguinsCorp/prato-cheio/pull/18).
 
 ---
 
-**Limitações e o que ficou de fora:** (o que vocês viram e decidiram não refatorar, e por quê)
+**Limitações e o que ficou de fora:** a separação da validação de entrada em `src/validacao.js`, cogitada antes de H3, não foi aplicada: a duplicação das transições estava no caminho das próximas fatias. Continuam repetidos o `try/catch` das rotas em `src/app.js` e a montagem de listas em `public/app.js`, que também cresceu e é candidato a ser dividido.
