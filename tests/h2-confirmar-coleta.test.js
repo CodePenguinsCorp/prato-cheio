@@ -18,7 +18,8 @@ afterAll(async () => {
   await encerrar();
 });
 
-const coletar = (id, voluntario) => request(app).post(`/api/doacoes/${id}/coletar`).send({ voluntario });
+// Os cenários abaixo confirmam o primeiro aceite da doação (versão 1).
+const coletar = (id, voluntario) => request(app).post(`/api/doacoes/${id}/coletar`).send({ voluntario, versaoAceite: 1 });
 
 async function daPadaria() {
   const resposta = await request(app).get('/api/minhas-doacoes').query({ doador: PADARIA });

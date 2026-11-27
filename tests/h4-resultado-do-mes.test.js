@@ -25,7 +25,7 @@ async function publicarEm(instante) {
 
 async function coletarEm(id, instante) {
   agora = new Date(instante);
-  const resposta = await request(app).post(`/api/doacoes/${id}/coletar`).send({ voluntario: 'Rui' });
+  const resposta = await request(app).post(`/api/doacoes/${id}/coletar`).send({ voluntario: 'Rui', versaoAceite: 1 });
   expect(resposta.status).toBe(200);
 }
 

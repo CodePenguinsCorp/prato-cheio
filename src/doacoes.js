@@ -76,7 +76,10 @@ function exigirId(id) {
 async function buscarParaTransicao(id, transicao) {
   const doacao = await repo.buscarPorId(id);
   if (!doacao) throw new Error('doação não encontrada');
-  if (doacao.status !== transicao.de) throw new Error(transicao.recusas[doacao.status]);
+  if (doacao.status !== transicao.de) {
+    throw new Error(Object.hasOwn(transicao.recusas, doacao.status)
+      ? transicao.recusas[doacao.status] : 'estado da doação inválido');
+  }
   return doacao;
 }
 
@@ -121,12 +124,16 @@ export async function aceitar(id, ong) {
 }
 
 // H2 — "o voluntário confirma a coleta".
-export async function confirmarColeta(id, voluntario, agora = new Date()) {
+export async function confirmarColeta(id, { voluntario, versaoAceite } = {}, agora = new Date()) {
   const idNumerico = exigirId(id);
   const nome = exigirTexto(voluntario, 'voluntario');
-  await buscarParaTransicao(idNumerico, TRANSICOES.confirmarColeta);
+  const doacao = await buscarParaTransicao(idNumerico, TRANSICOES.confirmarColeta);
+  if (!Number.isInteger(versaoAceite) || versaoAceite < 0) {
+    throw new Error('identifique o aceite atual para confirmar a coleta');
+  }
+  if (doacao.versao_aceite !== versaoAceite) throw new Error('o aceite mudou; atualize a página');
 
-  const coletada = await repo.confirmarColeta(idNumerico, nome, agora);
+  const coletada = await repo.confirmarColeta(idNumerico, nome, agora, versaoAceite);
   if (!coletada) throw new Error('a doação mudou de situação; atualize a página');
   return coletada;
 }

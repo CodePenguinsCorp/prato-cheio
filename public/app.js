@@ -234,7 +234,7 @@ function criarCartaoDoDoador(doacao) {
   item.className = 'donation-card';
   const principal = criarResumo(doacao);
   principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
-  if (doacao.status === 'disponivel' && doacao.motivo_devolucao) {
+  if (doacao.motivo_devolucao) {
     principal.append(criarLinha(`Devolvida por uma organização. Motivo: ${doacao.motivo_devolucao}`));
   }
   if (doacao.status === 'coletada') {
@@ -329,7 +329,7 @@ function criarCartaoDaOng(doacao) {
     dica: 'Ex.: Rui',
     botao: 'Confirmar coleta',
     enviar: async (voluntario) => {
-      await enviarJson(`/api/doacoes/${doacao.id}/coletar`, { voluntario });
+      await enviarJson(`/api/doacoes/${doacao.id}/coletar`, { voluntario, versaoAceite: doacao.versao_aceite });
       mostrarToast(`Coleta de ${doacao.tipo} confirmada.`);
       await atualizarPaineis();
     }

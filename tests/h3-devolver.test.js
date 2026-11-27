@@ -42,7 +42,7 @@ describe('H3: a ONG devolve uma doação aceita', () => {
   it('H3-CA2: recusa devolver uma doação já coletada, que continua coletada', async () => {
     const doacao = await publicar(app);
     await aceitar(app, doacao.id, 'Casa Esperança');
-    await request(app).post(`/api/doacoes/${doacao.id}/coletar`).send({ voluntario: 'Rui' });
+    await request(app).post(`/api/doacoes/${doacao.id}/coletar`).send({ voluntario: 'Rui', versaoAceite: 1 });
 
     const resposta = await devolver(doacao.id);
 

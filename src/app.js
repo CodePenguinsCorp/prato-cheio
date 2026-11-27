@@ -60,7 +60,7 @@ export function criarApp({ relogio = () => new Date() } = {}) {
 
   app.post('/api/doacoes/:id/coletar', async (req, res) => {
     try {
-      res.json(await doacoes.confirmarColeta(req.params.id, req.body?.voluntario, relogio()));
+      res.json(await doacoes.confirmarColeta(req.params.id, req.body, relogio()));
     } catch (erro) {
       res.status(400).json({ erro: erro.message });
     }
