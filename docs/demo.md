@@ -80,14 +80,14 @@ Use um banco novo e vazio. Abra o produto no navegador do celular. As seções f
 
 ## Testado por
 
-- **Nome:** PENDENTE (integrante que não escreveu o roteiro)
-- **Data:** PENDENTE
-- **Aparelho e navegador:** PENDENTE
-- **O que precisou ser corrigido:** PENDENTE (ou "nada precisou mudar")
+- **Nome:** Matheus Büsemayer
+- **Data:** 26/11/2026
+- **Aparelho e navegador:** navegador do notebook (não foi testado em celular)
+- **O que precisou ser corrigido:** nada precisou mudar
 
 ### Registro anterior (roteiro da Aula 13, versão anterior do produto)
 
 - **Responsável pela validação:** André Schultz, com execução assistida pelo Codex em **24/11/2026**, a seu pedido. Esta sessão usou um clone novo do commit `8d6e5fd`, Node.js 22.14.0 e PostgreSQL 18.3 local, com bancos descartáveis separados para demo e testes. A aplicação foi acessada em `http://localhost:3101` (`PORT=3101`).
 - **Resultado observado:** passos 1 a 5 executados pela interface; passos 6 a 8 conferidos pela API; passo 9 com **15 testes passando**. As doações finais e a associação à primeira ONG foram conferidas diretamente no banco. Veja a [evidência da execução](evidencias/validacao-aula-13.md).
 - **Correções do roteiro:** aguardar a prontidão do PostgreSQL, instalar pelo lockfile com `npm ci`, separar o banco dos testes, explicitar as variáveis por terminal e a branch do PR. O fluxo da aplicação não precisou de alteração.
-- **Execução independente:** ainda não realizada por outro integrante sem ajuda. A validação assistida acima não substitui esse requisito da atividade. Após a execução manual, registrar nome, data real e eventuais correções nesta seção.
+- **Execução independente:** em 24/11 ainda não havia sido feita; o registro atual está acima.

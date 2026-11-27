@@ -4,7 +4,7 @@
 
 > **STATUS SUGERIDOS, A CONFIRMAR PELO GRUPO.** Só deixe "atende" em uma linha depois de conferir a evidência.
 
-Evidência automatizada: `npm test` com **58 testes passando**, local, em 26/11/2026, PostgreSQL 16, na `main` com H1 a H4 (PRs [15](https://github.com/CodePenguinsCorp/prato-cheio/pull/15), [16](https://github.com/CodePenguinsCorp/prato-cheio/pull/16), [17](https://github.com/CodePenguinsCorp/prato-cheio/pull/17) e [18](https://github.com/CodePenguinsCorp/prato-cheio/pull/18)). [CI verde da `main`](https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/45928464135). Os passos são os de [docs/demo.md](demo.md); a reprodução por um integrante e em celular real está **PENDENTE**. A [validação de 24/11](evidencias/validacao-aula-13.md) se refere à versão anterior.
+Evidência automatizada: `npm test` com **58 testes passando**, local, em 26/11/2026, PostgreSQL 16, na `main` com H1 a H4 (PRs [15](https://github.com/CodePenguinsCorp/prato-cheio/pull/15), [16](https://github.com/CodePenguinsCorp/prato-cheio/pull/16), [17](https://github.com/CodePenguinsCorp/prato-cheio/pull/17) e [18](https://github.com/CodePenguinsCorp/prato-cheio/pull/18)). [CI verde da `main`](https://github.com/CodePenguinsCorp/prato-cheio/actions/runs/45928464135). Os passos são os de [docs/demo.md](demo.md); o roteiro foi executado por Matheus no navegador do notebook em 26/11; o teste em celular real está **PENDENTE**. A [validação de 24/11](evidencias/validacao-aula-13.md) se refere à versão anterior.
 
 | # | Critério de aceite | Status (sugerido) | Evidência |
 |:--:|---|:--:|---|
