@@ -8,6 +8,9 @@ const doadorInput = document.getElementById('doador');
 const consultaDoador = document.getElementById('consulta-doador');
 const listaMinhas = document.getElementById('lista-minhas');
 let doadorConsultado = '';
+const consultaOng = document.getElementById('consulta-ong');
+const listaOng = document.getElementById('lista-ong');
+let ongConsultada = '';
 const nomeOng = document.getElementById('nome-ong');
 const totalDisponiveis = document.getElementById('total-disponiveis');
 const impactoTexto = document.getElementById('impacto-texto');
@@ -247,6 +250,96 @@ async function carregarMinhas() {
   }
 }
 
+function criarCampo(id, rotulo, dica) {
+  const campo = document.createElement('div');
+  campo.className = 'field';
+  const label = document.createElement('label');
+  label.htmlFor = id;
+  label.textContent = rotulo;
+  const input = document.createElement('input');
+  input.id = id;
+  input.type = 'text';
+  input.placeholder = dica;
+  campo.append(label, input);
+  return { campo, input };
+}
+
+// Formulário curto dentro do cartão: um campo de texto e um botão.
+// A validação fica na API; a mensagem dela aparece no aviso.
+function criarAcao({ id, rotulo, dica, botao, enviar }) {
+  const formulario = document.createElement('form');
+  formulario.className = 'card-action';
+  const { campo, input } = criarCampo(id, rotulo, dica);
+  const confirmar = document.createElement('button');
+  confirmar.type = 'submit';
+  confirmar.className = 'button button-accept';
+  confirmar.textContent = botao;
+  formulario.append(campo, confirmar);
+  formulario.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    confirmar.disabled = true;
+    try {
+      await enviar(input.value.trim());
+    } catch (erro) {
+      mostrarToast(erro.message, 'error');
+      confirmar.disabled = false;
+    }
+  });
+  return formulario;
+}
+
+async function enviarJson(url, corpo) {
+  const resposta = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(corpo)
+  });
+  return lerResposta(resposta);
+}
+
+async function atualizarPaineis() {
+  await carregar();
+  await carregarDaOng();
+  await carregarMinhas();
+}
+
+function criarCartaoDaOng(doacao) {
+  const item = document.createElement('li');
+  item.className = 'donation-card';
+  const principal = criarResumo(doacao);
+  principal.append(criarLinha(descreverSituacao(doacao), `situation situation-${doacao.status}`));
+  if (doacao.doador) principal.append(criarLinha(`Doador: ${doacao.doador}`));
+  item.append(principal);
+  if (doacao.status === 'coletada') {
+    principal.append(criarLinha(`Coletada por ${doacao.voluntario} em ${formatarHorario(doacao.coletada_em)}.`));
+    return item;
+  }
+  item.append(criarAcao({
+    id: `voluntario-${doacao.id}`,
+    rotulo: 'Nome de quem coletou',
+    dica: 'Ex.: Rui',
+    botao: 'Confirmar coleta',
+    enviar: async (voluntario) => {
+      await enviarJson(`/api/doacoes/${doacao.id}/coletar`, { voluntario });
+      mostrarToast(`Coleta de ${doacao.tipo} confirmada.`);
+      await atualizarPaineis();
+    }
+  }));
+  return item;
+}
+
+async function carregarDaOng() {
+  if (!ongConsultada) return;
+  try {
+    const resposta = await fetch(`/api/doacoes-da-ong?ong=${encodeURIComponent(ongConsultada)}`);
+    const doacoes = await lerResposta(resposta);
+    if (doacoes.length) listaOng.replaceChildren(...doacoes.map(criarCartaoDaOng));
+    else mensagemNaLista(listaOng, 'Essa organização ainda não aceitou doações.');
+  } catch (erro) {
+    mensagemNaLista(listaOng, erro.message);
+  }
+}
+
 async function carregar() {
   lista.setAttribute('aria-busy', 'true');
   try {
@@ -282,8 +375,9 @@ async function aceitarDoacao(doacao, botao) {
     });
     await lerResposta(resposta);
     mostrarToast(`Doação de ${doacao.tipo} reservada para ${ong}.`);
-    await carregar();
-    await carregarMinhas();
+    ongConsultada = ong;
+    consultaOng.value = ong;
+    await atualizarPaineis();
   } catch (erro) {
     mostrarToast(erro.message, 'error');
     botao.disabled = false;
@@ -338,6 +432,16 @@ form.addEventListener('submit', async (evento) => {
 });
 
 nomeOng.addEventListener('input', () => validarOng(false));
+
+document.getElementById('form-ong').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  if (!validarObrigatorio(consultaOng, 'campo-consulta-ong', 'erro-consulta-ong', 'Informe o nome da organização.')) {
+    consultaOng.focus();
+    return;
+  }
+  ongConsultada = consultaOng.value.trim();
+  await carregarDaOng();
+});
 
 document.getElementById('form-minhas').addEventListener('submit', async (evento) => {
   evento.preventDefault();

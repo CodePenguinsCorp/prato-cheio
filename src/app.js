@@ -26,6 +26,14 @@ export function criarApp({ relogio = () => new Date() } = {}) {
     }
   });
 
+  app.get('/api/doacoes-da-ong', async (req, res) => {
+    try {
+      res.json(await doacoes.listarDaOng(req.query.ong));
+    } catch (erro) {
+      res.status(400).json({ erro: erro.message });
+    }
+  });
+
   app.post('/api/doacoes', async (req, res) => {
     try {
       res.status(201).json(await doacoes.criarDoacao(req.body, relogio()));

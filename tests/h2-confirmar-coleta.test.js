@@ -97,6 +97,32 @@ describe('H2: o voluntário confirma a coleta', () => {
     expect(resposta.body.erro).toBe('doação não encontrada');
   });
 
+  it('H2 (tela da ONG): a ONG vê só as doações que aceitou, inclusive a já coletada', async () => {
+    const paes = await publicar(app, { tipo: 'Pães' });
+    const bolos = await publicar(app, { tipo: 'Bolos' });
+    const sopa = await publicar(app, { tipo: 'Sopa' });
+    await publicar(app, { tipo: 'Frutas' });
+    await aceitar(app, paes.id, 'Casa Esperança');
+    await aceitar(app, bolos.id, 'Casa Esperança');
+    await aceitar(app, sopa.id, 'Outra ONG');
+    await coletar(paes.id, 'Rui');
+
+    const resposta = await request(app).get('/api/doacoes-da-ong').query({ ong: ' casa esperança ' });
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.map(({ tipo, status, voluntario }) => ({ tipo, status, voluntario }))).toEqual([
+      { tipo: 'Pães', status: 'coletada', voluntario: 'Rui' },
+      { tipo: 'Bolos', status: 'aceita', voluntario: null }
+    ]);
+  });
+
+  it('H2 (limite): recusa a consulta da ONG sem o nome', async () => {
+    const resposta = await request(app).get('/api/doacoes-da-ong');
+
+    expect(resposta.status).toBe(400);
+    expect(resposta.body.erro).toBe('ong é obrigatório');
+  });
+
   it('H2 (limite): duas confirmações ao mesmo tempo registram só uma', async () => {
     const doacao = await publicar(app);
     await aceitar(app, doacao.id);

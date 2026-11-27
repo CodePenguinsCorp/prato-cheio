@@ -60,6 +60,11 @@ export async function listarDoDoador(doador) {
   return repo.listarPorDoador(exigirTexto(doador, 'doador'));
 }
 
+// A ONG precisa ver o que aceitou para saber o que falta buscar e o que chegou.
+export async function listarDaOng(ong) {
+  return repo.listarPorOng(exigirTexto(ong, 'ong'));
+}
+
 // História zero — "uma ONG aceita uma doação".
 // Regra do caso: uma doação aceita não fica disponível para outra ONG.
 export async function aceitar(id, ong) {

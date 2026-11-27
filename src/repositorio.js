@@ -39,6 +39,17 @@ export async function listarPorDoador(doador) {
   return rows;
 }
 
+export async function listarPorOng(ong) {
+  const { rows } = await query(
+    `SELECT *
+       FROM doacoes
+      WHERE lower(ong) = lower($1)
+      ORDER BY criada_em ASC, id ASC`,
+    [ong]
+  );
+  return rows;
+}
+
 export async function buscarPorId(id) {
   const { rows } = await query(
     'SELECT * FROM doacoes WHERE id = $1',
